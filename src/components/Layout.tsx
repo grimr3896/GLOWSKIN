@@ -151,15 +151,6 @@ export function Header({ onOpenSearch }: HeaderProps) {
           >
             <User size={22} />
           </Link>
-          <Link 
-            to="/cart"
-            className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors relative"
-          >
-            <ShoppingBag size={22} />
-            <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#C8A49F] text-[#4D0E13] text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
-              2
-            </span>
-          </Link>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
@@ -209,7 +200,6 @@ export function Header({ onOpenSearch }: HeaderProps) {
               
               <div className="pt-12 border-t border-[#4D0E13]/10 flex flex-col gap-6">
                 <MobileNavItem to="/profile" label="Account / Sign In" onClick={handleMobileClick} />
-                <MobileNavItem to="/cart" label="Your Bag (2)" onClick={handleMobileClick} />
               </div>
             </div>
           </motion.div>
