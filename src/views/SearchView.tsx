@@ -75,6 +75,7 @@ export function SearchView({ onClose }: { onClose: () => void }) {
                     src={product.image_url} 
                     alt={product.name}
                     className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-brand-emerald/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Sparkles className="text-white" size={32} />
@@ -82,7 +83,7 @@ export function SearchView({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="flex justify-between items-baseline">
                   <h3 className="font-sans text-[11px] uppercase tracking-[0.2em] text-slate-100 font-extrabold mb-2 leading-relaxed">{product.name}</h3>
-                  <span className="font-serif text-xl text-brand-emerald-light">{product.price}</span>
+                  <span className="font-sans text-[10px] text-brand-emerald-light tracking-[0.2em] uppercase font-bold">{product.price}</span>
                 </div>
               </Link>
             ))}

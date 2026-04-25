@@ -136,12 +136,12 @@ export function AdminView() {
                 <tr key={product.id} className="hover:bg-brand-black/40 transition-colors">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <img src={product.image_url} className="w-8 h-10 object-cover border border-brand-border grayscale opacity-50" />
+                      <img src={product.image_url} className="w-8 h-10 object-cover border border-brand-border grayscale opacity-50" referrerPolicy="no-referrer" />
                       <span className="font-sans text-[10px] uppercase tracking-[0.1em] font-extrabold text-slate-200">{product.name}</span>
                     </div>
                   </td>
                   <td className="px-8 py-6 text-[10px] uppercase tracking-widest text-slate-500">{product.category}</td>
-                  <td className="px-8 py-6 font-serif text-slate-300">{product.price}</td>
+                  <td className="px-8 py-6 font-sans text-[10px] uppercase tracking-widest text-slate-300 font-bold">{product.price}</td>
                   <td className="px-8 py-6">
                     <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-brand-emerald-light font-bold">
                       <CheckCircle2 size={12} /> Active

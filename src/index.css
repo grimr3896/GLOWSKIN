@@ -5,12 +5,12 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Newsreader", ui-serif, Georgia, serif;
   
-  --color-brand-emerald: #064E3B;
-  --color-brand-emerald-light: #95D3BA;
-  --color-brand-black: #080A0C;
-  --color-brand-charcoal: #0D0F12;
-  --color-brand-surface: #16191D;
-  --color-brand-border: #1A1D21;
+  --color-brand-emerald: #4D0E13;
+  --color-brand-emerald-light: #C8A49F;
+  --color-brand-black: #1A0809;
+  --color-brand-charcoal: #2C0F12;
+  --color-brand-surface: #EEE4DA;
+  --color-brand-border: #D8C4AC;
 }
 
 @layer base {

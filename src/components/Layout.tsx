@@ -51,12 +51,12 @@ export function Header({ onOpenSearch }: HeaderProps) {
       initial={{ y: 0 }}
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 w-full z-50 bg-brand-black/40 backdrop-blur-xl border-b border-brand-border/20"
+      className="fixed top-0 w-full z-50 bg-brand-black/60 backdrop-blur-xl border-b border-brand-border/10"
     >
       <div className="flex justify-between items-center px-6 md:px-12 py-6 md:py-8">
         <Link 
           to="/"
-          className="text-xl md:text-2xl font-semibold tracking-tighter text-slate-50 uppercase font-serif"
+          className="text-xl md:text-2xl font-semibold tracking-tighter text-brand-surface uppercase font-serif"
           onClick={handleMobileClick}
         >
           GlowSkin
@@ -68,7 +68,7 @@ export function Header({ onOpenSearch }: HeaderProps) {
               key={item.label}
               to={item.path}
               className={({ isActive }) => `font-serif font-light tracking-widest uppercase transition-all duration-500 ease-in-out pb-1
-                ${isActive ? 'text-slate-50 border-b border-brand-emerald' : 'text-slate-400 hover:text-slate-50'}
+                ${isActive ? 'text-brand-surface border-b border-brand-emerald-light' : 'text-brand-emerald-light/60 hover:text-brand-surface'}
               `}
             >
               {item.label}
@@ -77,7 +77,7 @@ export function Header({ onOpenSearch }: HeaderProps) {
           <NavLink
             to="/profile"
             className={({ isActive }) => `font-serif font-light tracking-widest uppercase transition-all duration-500 ease-in-out pb-1
-              ${isActive ? 'text-slate-50 border-b border-brand-emerald' : 'text-slate-400 hover:text-slate-50'}
+              ${isActive ? 'text-brand-surface border-b border-brand-emerald-light' : 'text-brand-emerald-light/60 hover:text-brand-surface'}
             `}
           >
             Profile
@@ -87,19 +87,19 @@ export function Header({ onOpenSearch }: HeaderProps) {
         <div className="flex items-center space-x-6 md:space-x-8">
           <button 
             onClick={onOpenSearch}
-            className="hidden md:block text-brand-emerald hover:text-slate-50 transition-colors"
+            className="hidden md:block text-brand-emerald-light hover:text-brand-surface transition-colors"
           >
             <Search size={20} />
           </button>
           <Link 
             to="/profile"
-            className="hidden md:block text-brand-emerald hover:text-slate-50 transition-colors"
+            className="hidden md:block text-brand-emerald-light hover:text-brand-surface transition-colors"
           >
             <User size={20} />
           </Link>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-brand-emerald hover:text-slate-50 transition-colors md:hidden"
+            className="text-brand-emerald-light hover:text-brand-surface transition-colors md:hidden"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -136,10 +136,10 @@ export function Header({ onOpenSearch }: HeaderProps) {
                     <Link
                       to={item.path}
                       onClick={handleMobileClick}
-                      className="flex justify-between items-center text-5xl font-serif italic text-slate-50 border-b border-brand-border/20 pb-6 group"
+                      className="flex justify-between items-center text-5xl font-serif italic text-brand-surface border-b border-brand-border/10 pb-6 group"
                     >
                       <span>{item.label}</span>
-                      <ChevronRight size={24} className="text-brand-emerald group-hover:translate-x-2 transition-transform" />
+                      <ChevronRight size={24} className="text-brand-emerald-light group-hover:translate-x-2 transition-transform" />
                     </Link>
                   </motion.div>
                 ))}
@@ -153,7 +153,7 @@ export function Header({ onOpenSearch }: HeaderProps) {
                       handleMobileClick();
                       onOpenSearch();
                     }}
-                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-charcoal border border-brand-border text-slate-300 rounded-sm hover:border-brand-emerald transition-colors"
+                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-emerald border border-brand-emerald-light/20 text-brand-surface rounded-3xl hover:bg-brand-emerald-light hover:text-white transition-colors shadow-2xl"
                   >
                     <Search size={24} />
                     <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Search</span>
@@ -161,19 +161,19 @@ export function Header({ onOpenSearch }: HeaderProps) {
                   <Link 
                     to="/profile"
                     onClick={handleMobileClick}
-                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-charcoal border border-brand-border text-slate-300 rounded-sm hover:border-brand-emerald transition-colors"
+                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-emerald border border-brand-emerald-light/20 text-brand-surface rounded-3xl hover:bg-brand-emerald-light hover:text-white transition-colors shadow-2xl"
                   >
                     <User size={24} />
                     <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Account</span>
                   </Link>
                 </div>
 
-                <div className="pt-8 border-t border-brand-border/30 flex justify-between items-center opacity-60">
+                <div className="pt-8 border-t border-brand-border/10 flex justify-between items-center opacity-60">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Global Presence</span>
-                    <span className="text-[10px] text-slate-300 uppercase tracking-widest italic">London / Paris / Kyoto</span>
+                    <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-bold font-sans">Global Presence</span>
+                    <span className="text-[10px] text-brand-surface uppercase tracking-widest italic font-serif">London / Paris / Kyoto</span>
                   </div>
-                  <span className="text-[10px] text-brand-emerald font-bold uppercase tracking-widest italic">Aesthetic Integrity</span>
+                  <span className="text-[10px] text-brand-emerald-light font-bold uppercase tracking-widest italic font-serif">Aesthetic Integrity</span>
                 </div>
               </div>
             </div>
@@ -189,38 +189,38 @@ export function Footer() {
     <footer className="bg-brand-black border-t border-brand-border pt-16 pb-32 md:pb-16 px-6 md:px-12 mt-24">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
         <div className="max-w-xs">
-          <Link to="/" className="text-xl font-semibold tracking-tighter text-slate-50 mb-6 uppercase block">GlowSkin</Link>
-          <p className="font-sans text-xs text-slate-400 leading-relaxed uppercase tracking-widest">
-            A curated selection of the world's most trusted skincare and cosmetic brands.
+          <Link to="/" className="text-xl font-semibold tracking-tighter text-brand-surface mb-6 uppercase block font-serif">GlowSkin</Link>
+          <p className="font-sans text-[10px] text-brand-emerald-light/60 leading-relaxed uppercase tracking-[0.2em] font-medium">
+            Discover a curated collection that harmonizes science with the purest natural ingredients.
           </p>
         </div>
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 w-full md:w-auto">
           <div>
-            <h3 className="text-xs font-semibold text-slate-50 uppercase mb-6 tracking-widest">Atelier</h3>
-            <ul className="space-y-3 text-[11px] text-slate-500 uppercase tracking-wider">
-              <li><Link to="/about" className="hover:text-brand-emerald-light transition-colors">Our Origin</Link></li>
-              <li><Link to="/sourcing" className="hover:text-brand-emerald-light transition-colors">Sourcing</Link></li>
-              <li><Link to="/sustainability" className="hover:text-brand-emerald-light transition-colors">Sustainability</Link></li>
+            <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Atelier</h3>
+            <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
+              <li><Link to="/about" className="hover:text-brand-surface transition-colors">Our Origin</Link></li>
+              <li><Link to="/sourcing" className="hover:text-brand-surface transition-colors">Sourcing</Link></li>
+              <li><Link to="/sustainability" className="hover:text-brand-surface transition-colors">Sustainability</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="text-xs font-semibold text-slate-50 uppercase mb-6 tracking-widest">Concierge</h3>
-            <ul className="space-y-3 text-[11px] text-slate-500 uppercase tracking-wider">
-              <li><Link to="/shipping" className="hover:text-brand-emerald-light transition-colors">Shipping</Link></li>
-              <li><Link to="/contact" className="hover:text-brand-emerald-light transition-colors">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-brand-emerald-light transition-colors">Privacy</Link></li>
+            <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Concierge</h3>
+            <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
+              <li><Link to="/shipping" className="hover:text-brand-surface transition-colors">Shipping</Link></li>
+              <li><Link to="/contact" className="hover:text-brand-surface transition-colors">Contact</Link></li>
+              <li><Link to="/privacy" className="hover:text-brand-surface transition-colors">Privacy</Link></li>
             </ul>
           </div>
           <div>
-             <h3 className="text-xs font-semibold text-slate-50 uppercase mb-6 tracking-widest">Legal</h3>
-              <ul className="space-y-3 text-[11px] text-slate-500 uppercase tracking-wider">
-                <li><Link to="/terms" className="hover:text-brand-emerald-light transition-colors">Terms of Service</Link></li>
-                <li><Link to="/refund" className="hover:text-brand-emerald-light transition-colors">Refund Policy</Link></li>
+             <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Legal</h3>
+              <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
+                <li><Link to="/terms" className="hover:text-brand-surface transition-colors">Terms of Service</Link></li>
+                <li><Link to="/refund" className="hover:text-brand-surface transition-colors">Refund Policy</Link></li>
                 <li className="pt-4 border-t border-brand-border/10">
                   <Link 
                     to="/admin"
-                    className="text-[9px] opacity-40 hover:opacity-100 hover:text-brand-emerald-light transition-all flex items-center gap-2 italic"
+                    className="text-[9px] opacity-40 hover:opacity-100 hover:text-brand-emerald-light transition-all flex items-center gap-2 italic font-serif"
                   >
                     Curator Portal
                   </Link>
@@ -230,9 +230,9 @@ export function Footer() {
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-brand-border flex flex-col md:flex-row justify-between items-center gap-6">
-        <span className="text-[9px] text-slate-500 uppercase tracking-[0.4em]">© 2024 GlowSkin</span>
-        <div className="flex gap-8 text-[9px] text-slate-500 uppercase tracking-[0.4em]">
+      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-brand-border/10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <span className="text-[9px] text-brand-emerald-light/40 uppercase tracking-[0.4em] font-sans">© 2024 GlowSkin</span>
+        <div className="flex gap-8 text-[9px] text-brand-emerald-light/40 uppercase tracking-[0.4em] font-sans">
           <span>London</span>
           <span>Paris</span>
           <span>Kyoto</span>

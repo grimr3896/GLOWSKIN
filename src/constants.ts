@@ -6,7 +6,7 @@ export const PRODUCTS: Product[] = [
     "name": "CeraVe Hydrating Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$13.99",
+    "price": "$10.00",
     "image_url": "https://i.pinimg.com/736x/40/38/8b/40388be97d443b9b1b825026cabf5d35.jpg",
     "benefits": [
       "Gentle cleansing that removes dirt, oil, and makeup without stripping skin",
@@ -209,7 +209,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "moisturizers",
     "price": "$19.99",
-    "image_url": "https://i.pinimg.com/736x/83/6b/8b/836b8b497985ea79853288f05ad22a8.jpg",
+    "image_url": "https://i.pinimg.com/736x/2a/22/8b/2a228b3a0b8b3d8497b6154f9c26ffab.jpg",
     "benefits": [
       "Rich, non-greasy formula for very dry and sensitive skin",
       "Contains 3 essential ceramides to repair skin barrier",
@@ -238,7 +238,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "moisturizers",
     "price": "$7.99",
-    "image_url": "https://i.pinimg.com/1200x/0c/0d/da/0c0dda40c25673b8eb91da31a2ad2.jpg",
+    "image_url": "https://i.pinimg.com/736x/cf/f8/70/cff870c8a70014b6c85c26e41fe29524.jpg",
     "benefits": [
       "Lightweight gel-cream with hyaluronic acid for hydration",
       "Oil-free formula suitable for all skin types",
@@ -354,7 +354,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "moisturizers",
     "price": "$14.99",
-    "image_url": "https://i.pinimg.com/736x/60/6b/ef/606bef1df1f8c24cb39e7af02d704d58d.jpg",
+    "image_url": "https://i.pinimg.com/736x/87/b2/3e/87b23e48952276b14613cdbaed058d38.jpg",
     "benefits": [
       "Lightweight, oil-free moisturizer for dry, sensitive skin",
       "Contains niacinamide to strengthen skin barrier",
@@ -499,7 +499,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "sunscreen",
     "price": "$7.99",
-    "image_url": "https://i.pinimg.com/736x/ef/ae/32/efae32d3692d6af666b36e7e5026724d.jpg",
+    "image_url": "https://i.pinimg.com/736x/71/95/c4/7195c4eea780377333f76cd00ee862fc.jpg",
     "benefits": [
       "Japanese sunscreen with watery, aqueous formula",
       "SPF 50+ PA++++ maximum protection",
@@ -586,7 +586,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "serums",
     "price": "$6.99",
-    "image_url": "https://i.pinimg.com/736x/ce/ea/5b/ceea5bbf93790c96f0100fec628dffeab.jpg",
+    "image_url": "https://i.pinimg.com/736x/10/e9/09/10e909c799aec29b8056e8462e0b5ffc.jpg",
     "benefits": [
       "High-strength vitamin and mineral blemish formula",
       "Reduces appearance of skin blemishes and congestion",
@@ -731,7 +731,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "toners",
     "price": "$33.00",
-    "image_url": "https://i.pinimg.com/1200x/57/25/50/572550cf2a97ec1ba4958d44d09cfab0.jpg",
+    "image_url": "https://i.pinimg.com/1200x/2b/50/fe/2b50fe596d08f9fc375fad40d3a08242.jpg",
     "benefits": [
       "2-in-1 hybrid toner and moisturizer",
       "Deeply hydrates like a cream with the lightness of a toner",
@@ -784,6 +784,35 @@ export const PRODUCTS: Product[] = [
     ]
   },
   {
+    "id": "loreal-true-match-foundation",
+    "name": "L'Oréal True Match Super-Blendable Foundation",
+    "category": "makeup",
+    "subcategory": "foundation",
+    "price": "$10.00",
+    "image_url": "https://i.pinimg.com/736x/98/1a/27/981a27e045c07c0ac79f1b3b4e6878c1.jpg",
+    "benefits": [
+      "Super-blendable formula matches skin's unique undertones",
+      "Available in 40+ true-to-skin shades",
+      "Hydrating formula with Pro-Vitamin B5 and Vitamin E",
+      "Light to medium coverage with a natural finish",
+      "Fragrance-free and non-comedogenic",
+      "Formulated to match skin's texture and tone",
+      "SPF 17 protection in select shades",
+      "Provides a healthy-looking, radiant glow"
+    ],
+    "ingredients": "Water, Isododecane, Cyclopentasiloxane, Glycerin, Cyclohexasiloxane, PEG-10 Dimethicone, Methyl Methacrylate Crosspolymer, Butylene Glycol, Dimethicone, Isoeicosane, Disteardimonium Hectorite, Cetyl PEG/PPG-10/1 Dimethicone, Sodium Chloride, C9-15 Fluoroalcohol Phosphates, Polyglyceryl-4 Isostearate, Hexyl Laurate, Isostearyl Neopentanoate, Diazolidinyl Urea, Methylparaben, Propylparaben, Tocopherol, Panthenol.",
+    "how_to_use": [
+      "Dot foundation onto forehead, cheeks, and chin",
+      "Blend outward using a makeup sponge or brush",
+      "Apply more in areas that need extra coverage",
+      "Layer for buildable coverage from light to medium",
+      "Allow to set before applying additional makeup",
+      "Can be mixed with moisturizer for a more sheer finish",
+      "Works best on clean, primed skin",
+      "Use daily for a flawless, natural look"
+    ]
+  },
+  {
     "id": "estee-lauder-double-wear",
     "name": "Estée Lauder Double Wear Stay-in-Place Foundation",
     "category": "makeup",
@@ -818,7 +847,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "foundation",
     "price": "$9.99",
-    "image_url": "https://i.pinimg.com/736x/3f/da/d4/3fdad420153fad26f35900dad83c426.jpg",
+    "image_url": "https://i.pinimg.com/736x/98/1a/27/981a27e045c07c0ac79f1b3b4e6878c1.jpg",
     "benefits": [
       "Lightweight foundation that matches 100% of skin tones",
       "Super-blendable formula for a natural finish",
@@ -876,7 +905,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "concealer",
     "price": "$8.99",
-    "image_url": "https://i.pinimg.com/736x/b7/aa/d1/b7aad1f4c0c28237146ae50a8d94d127.jpg",
+    "image_url": "https://i.pinimg.com/1200x/ec/f5/a0/ecf5a0d85bb97e7efa59187ba15ebcf2.jpg",
     "benefits": [
       "Multi-use concealer with built-in sponge applicator",
       "Blurs dark circles and fine lines visually",
@@ -963,7 +992,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "lip products",
     "price": "$19.00",
-    "image_url": "https://i.pinimg.com/736x/44/bc/e7/44bce7a4b86fcd14a3c31dd7f5956947.jpg",
+    "image_url": "https://i.pinimg.com/1200x/87/df/e1/87dfe19e50d8fbd9e1b8af32104a371a.jpg",
     "benefits": [
       "Iconic matte lipstick with high color payoff",
       "Creamy, comfortable matte finish",
@@ -1253,7 +1282,7 @@ export const PRODUCTS: Product[] = [
     "category": "skincare",
     "subcategory": "cleansers",
     "price": "$10.99",
-    "image_url": "https://i.pinimg.com/736x/6c/a2/33/6ca233dc6ca233dc91bdb869e95fe403cf926fc8.jpg",
+    "image_url": "https://i.pinimg.com/1200x/84/c4/dd/84c4dd27a3073e392f45fd7a4e4145f6.jpg",
     "benefits": [
       "Gently dissolves makeup and sunscreen",
       "Soothing oat kernel oil and colloidal oatmeal",
@@ -1398,7 +1427,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "foundation",
     "price": "$32.00",
-    "image_url": "https://i.pinimg.com/736x/80/e3/5b/80e35bc5af6c6d37daeccd0ee1af7ee89.jpg",
+    "image_url": "https://i.pinimg.com/736x/0f/a9/be/0fa9be9723bdef3292b718eb3b0bf758.jpg",
     "benefits": [
       "Lightweight, blurring skin tint with natural finish",
       "Provides buildable light to medium coverage",
@@ -1514,7 +1543,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "mascara",
     "price": "$12.00",
-    "image_url": "https://i.pinimg.com/736x/77/44/e9/7744e973be89cb3d1bcdaec240fd5ce.jpg",
+    "image_url": "https://i.pinimg.com/736x/72/64/c8/7264c8fd1161eb381da92c2c9c354e1e.jpg",
     "benefits": [
       "Japanese cult-favorite mascara for extreme length and curl",
       "Super waterproof and smudge-proof formula",
@@ -1630,7 +1659,7 @@ export const PRODUCTS: Product[] = [
     "category": "makeup",
     "subcategory": "eyeliner",
     "price": "$19.00",
-    "image_url": "https://i.pinimg.com/1200x/05/c0/3a/05c03a0e5e2b1cfa5396972538aa0643.jpg",
+    "image_url": "https://i.pinimg.com/736x/f0/6a/64/f06a6474cf8d93d97186540af8c5f2a4.jpg",
     "benefits": [
       "Retractable eye liner with creamy, smooth formula",
       "Long-wearing and smudge-resistant",

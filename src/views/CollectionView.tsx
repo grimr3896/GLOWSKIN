@@ -81,49 +81,49 @@ export function CollectionView() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-32">
+    <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-32 bg-brand-surface mt-24 rounded-[3rem] shadow-2xl relative">
       {/* Header */}
       <div className="mb-24">
-        <nav className="flex items-center space-x-3 text-slate-500 text-[10px] uppercase tracking-[0.3em] font-bold mb-8">
+        <nav className="flex items-center space-x-3 text-brand-emerald/40 text-[10px] uppercase tracking-[0.3em] font-bold mb-8">
           <Link to="/" className="hover:text-brand-emerald-light transition-colors">Home</Link>
           <ChevronRight size={12} />
           <Link to="/shop" className="hover:text-brand-emerald-light transition-colors">Shop</Link>
           {categoryUrl && (
             <>
               <ChevronRight size={12} />
-              <span className="text-slate-100">{categoryUrl}</span>
+              <span className="text-brand-emerald">{categoryUrl}</span>
             </>
           )}
         </nav>
-        <h1 className="font-serif text-6xl md:text-8xl italic text-slate-50 border-b border-brand-border pb-12 mb-12 leading-tight">
-          {activeCategory ? activeCategory.replace(/-/g, ' ') : 'GlowSkin Selection'}
+        <h1 className="font-serif text-6xl md:text-8xl italic text-brand-emerald border-b border-brand-border/30 pb-12 mb-12 leading-tight">
+          {activeCategory ? activeCategory.replace(/-/g, ' ') : 'The Collection'}
         </h1>
 
         <div className="flex flex-col md:flex-row justify-between items-end gap-12">
-          <p className="max-w-xl text-slate-400 text-xl leading-relaxed font-extralight italic">
+          <p className="max-w-xl text-brand-emerald/70 text-xl leading-relaxed font-light italic">
             Curated clinical and cosmetic solutions for radiant skin and effortless beauty. From foundational basics to targeted treatments.
           </p>
           
           <div className="flex flex-col md:flex-row gap-6 w-full md:w-auto">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-brand-emerald-light transition-colors" size={16} />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-border group-focus-within:text-brand-emerald-light transition-colors" size={16} />
               <input 
                 type="text" 
-                placeholder="Search Artifacts..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-brand-charcoal border border-brand-border py-4 pl-14 pr-8 text-[11px] uppercase tracking-[0.2em] font-bold text-white focus:outline-none focus:border-brand-emerald-light w-full md:w-72 transition-all placeholder:text-slate-700"
+                className="bg-white border border-brand-border rounded-full py-4 pl-14 pr-8 text-[11px] uppercase tracking-[0.2em] font-bold text-brand-emerald focus:outline-none focus:border-brand-emerald-light w-full md:w-72 transition-all placeholder:text-brand-border"
               />
             </div>
             
             <div className="relative group">
-              <SlidersHorizontal className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 transition-colors" size={16} />
+              <SlidersHorizontal className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-border transition-colors" size={16} />
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-brand-charcoal border border-brand-border py-4 pl-14 pr-12 text-[11px] uppercase tracking-[0.2em] font-bold text-white focus:outline-none focus:border-brand-emerald-light w-full md:w-56 appearance-none transition-all cursor-pointer"
+                className="bg-white border border-brand-border rounded-full py-4 pl-14 pr-12 text-[11px] uppercase tracking-[0.2em] font-bold text-brand-emerald focus:outline-none focus:border-brand-emerald-light w-full md:w-56 appearance-none transition-all cursor-pointer"
               >
-                <option value="default">Default Relevance</option>
+                <option value="default">Sort by relevance</option>
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
               </select>
@@ -136,12 +136,12 @@ export function CollectionView() {
         {/* Sidebar */}
         <aside className="w-full lg:w-72 shrink-0 space-y-16">
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 mb-10 pb-4 border-b border-brand-border">Shop</h3>
-            <ul className="space-y-6 text-sm text-slate-500 uppercase tracking-widest mb-10">
-              <li className="text-[10px] font-bold">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-brand-emerald mb-10 pb-4 border-b border-brand-border">Shop</h3>
+            <ul className="space-y-6 text-sm text-brand-emerald-light uppercase tracking-widest mb-10 font-bold">
+              <li className="text-[10px]">
                 <Link 
                   to="/shop" 
-                  className={`flex items-center justify-between group hover:text-brand-emerald-light transition-colors ${!activeCategory ? 'text-brand-emerald-light' : ''}`}
+                  className={`flex items-center justify-between group hover:text-brand-emerald transition-colors ${!activeCategory ? 'text-brand-emerald' : ''}`}
                 >
                   <span>All Products</span>
                 </Link>
@@ -152,16 +152,16 @@ export function CollectionView() {
               <div key={group.title} className="mb-10 last:mb-0">
                 <Link 
                   to={`/shop/${group.title.toLowerCase()}`}
-                  className={`text-[10px] font-black uppercase tracking-[0.1em] mb-6 block transition-colors hover:text-brand-emerald-light ${activeCategory === group.title.toLowerCase() ? 'text-brand-emerald-light' : 'text-slate-100'}`}
+                  className={`text-[10px] font-black uppercase tracking-[0.1em] mb-6 block transition-colors hover:text-brand-emerald-light ${activeCategory === group.title.toLowerCase() ? 'text-brand-emerald' : 'text-brand-emerald/60'}`}
                 >
                   {group.title}
                 </Link>
-                <ul className="space-y-4 text-[10px] text-slate-500 uppercase tracking-widest font-bold pl-4">
+                <ul className="space-y-4 text-[10px] text-brand-emerald/40 uppercase tracking-widest font-bold pl-4">
                   {group.categories.map((cat) => (
                     <li key={cat}>
                       <Link 
                         to={`/shop/${cat.toLowerCase().replace(/\s/g, '-')}`}
-                        className={`flex items-center justify-between group hover:text-brand-emerald-light transition-colors ${activeCategory === cat.toLowerCase().replace(/\s/g, '-') ? 'text-brand-emerald-light' : ''}`}
+                        className={`flex items-center justify-between group hover:text-brand-emerald-light transition-colors ${activeCategory === cat.toLowerCase().replace(/\s/g, '-') ? 'text-brand-emerald' : ''}`}
                       >
                         <span>{cat}</span>
                       </Link>
@@ -173,10 +173,10 @@ export function CollectionView() {
           </div>
 
           <div className="pt-12">
-            <div className="p-10 bg-brand-charcoal border border-brand-border font-serif relative group overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-brand-emerald/30 group-hover:bg-brand-emerald transition-all"></div>
-              <p className="italic text-slate-400 text-base mb-8 leading-relaxed">"The water of life is not a substance, but a state of being."</p>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-brand-emerald-light font-sans font-bold flex items-center gap-2">
+            <div className="p-10 bg-brand-emerald text-brand-surface rounded-3xl font-serif relative group overflow-hidden shadow-xl">
+              <div className="absolute top-0 left-0 w-full h-1 bg-brand-emerald-light/30 group-hover:bg-brand-emerald-light transition-all"></div>
+              <p className="italic text-brand-surface/90 text-base mb-8 leading-relaxed font-light">"The water of life is not a substance, but a state of being."</p>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-brand-emerald-light font-sans font-extrabold flex items-center gap-2">
                 <Sparkles size={14} /> The Archives
               </span>
             </div>
@@ -196,26 +196,27 @@ export function CollectionView() {
                   className="group cursor-pointer"
                 >
                   <Link to={`/product/${product.id}`}>
-                    <div className="relative aspect-[4/5] overflow-hidden bg-brand-charcoal mb-10 border border-brand-border">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-brand-border mb-10 rounded-[2rem] border border-brand-border shadow-lg">
                       <img 
                         src={product.image_url} 
                         alt={product.name}
                         className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-105"
+                        referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                      <div className="absolute inset-0 bg-brand-emerald/5 group-hover:bg-transparent transition-colors"></div>
                       {product.limited && (
                         <div className="absolute top-8 right-8">
-                           <span className="bg-brand-emerald text-white px-6 py-2 text-[10px] tracking-[0.3em] uppercase font-bold shadow-xl">Limited Selection</span>
+                           <span className="bg-brand-emerald text-brand-surface px-6 py-2 text-[10px] tracking-[0.3em] uppercase font-bold shadow-xl rounded-full">Limited Selection</span>
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start px-2">
                       <div className="pr-4">
-                        <h2 className="font-sans text-[11px] uppercase tracking-[0.2em] mb-3 leading-relaxed group-hover:text-brand-emerald-light transition-colors text-slate-100 font-extrabold">{product.name}</h2>
-                        <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold">{product.subcategory}</span>
+                        <h2 className="font-sans text-[11px] uppercase tracking-[0.2em] mb-3 leading-relaxed group-hover:text-brand-emerald-light transition-colors text-brand-emerald font-extrabold">{product.name}</h2>
+                        <span className="text-[9px] uppercase tracking-widest text-brand-border font-extrabold">{product.subcategory}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-serif text-xl text-brand-emerald-light tracking-tight italic block mb-1">{product.price}</span>
+                        <span className="font-sans text-[10px] text-brand-emerald tracking-[0.2em] uppercase font-black block mb-1">{product.price}</span>
                       </div>
                     </div>
                   </Link>

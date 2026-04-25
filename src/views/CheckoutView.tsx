@@ -346,7 +346,7 @@ export function CheckoutView() {
                   <h3 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-8">Acquisition Manifest</h3>
                   <div className="flex gap-6 mb-8 pb-8 border-b border-brand-border">
                     <div className="w-20 h-24 bg-brand-black border border-brand-border overflow-hidden shrink-0">
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-contain grayscale opacity-60" />
+                      <img src={product.image_url} alt={product.name} className="w-full h-full object-contain grayscale opacity-60" referrerPolicy="no-referrer" />
                     </div>
                     <div className="flex flex-col justify-between py-1">
                       <div>
@@ -354,7 +354,7 @@ export function CheckoutView() {
                         <p className="text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-2">{product.subcategory}</p>
                       </div>
                       <div className="flex justify-between items-end">
-                        <span className="font-serif text-slate-100">{product.price}</span>
+                        <span className="font-sans text-[10px] text-brand-emerald-light tracking-[0.2em] uppercase font-bold">{product.price}</span>
                       </div>
                     </div>
                   </div>
