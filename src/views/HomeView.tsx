@@ -95,9 +95,9 @@ export function HomeView() {
               </Link>
               <div className="p-10 text-center">
                 <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
-                <h3 className="font-sans text-[11px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-10 overflow-hidden">{product.name}</h3>
+                <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
                 <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
-                <span className="text-[10px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
+                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
               </div>
             </motion.div>
           ))}
@@ -142,9 +142,9 @@ export function HomeView() {
               </Link>
               <div className="p-10 text-center">
                 <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
-                <h3 className="font-sans text-[11px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-10 overflow-hidden">{product.name}</h3>
+                <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
                 <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
-                <span className="text-[10px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
+                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
               </div>
             </motion.div>
           ))}

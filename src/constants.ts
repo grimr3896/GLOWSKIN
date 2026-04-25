@@ -6,7 +6,7 @@ export const PRODUCTS: Product[] = [
     "name": "CeraVe Hydrating Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$10.00",
+    "price": "$14.00",
     "image_url": "https://i.pinimg.com/736x/40/38/8b/40388be97d443b9b1b825026cabf5d35.jpg",
     "benefits": [
       "Gentle cleansing that removes dirt, oil, and makeup without stripping skin",
@@ -34,7 +34,7 @@ export const PRODUCTS: Product[] = [
     "name": "CeraVe Foaming Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$14.99",
+    "price": "$18.99",
     "image_url": "https://i.pinimg.com/1200x/b1/2d/23/b12d233ddacbe02ebe7b605d4c65fbaf.jpg",
     "benefits": [
       "Lightweight foaming formula perfect for oily and acne-prone skin",
@@ -63,7 +63,7 @@ export const PRODUCTS: Product[] = [
     "name": "Cetaphil Gentle Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$9.99",
+    "price": "$13.99",
     "image_url": "https://i.pinimg.com/736x/87/51/61/8751611e9bd241e7f70369c735dee585.jpg",
     "benefits": [
       "Ultra-gentle, soap-free formula suitable for sensitive skin",
@@ -92,7 +92,7 @@ export const PRODUCTS: Product[] = [
     "name": "La Roche-Posay Effaclar Purifying Foaming Gel",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$10.99",
+    "price": "$14.99",
     "image_url": "https://i.pinimg.com/736x/a0/1d/34/a01d34e3194c64b9dac120ab3dacb7e4.jpg",
     "benefits": [
       "Foaming gel specifically formulated for oily, acne-prone skin",
@@ -121,7 +121,7 @@ export const PRODUCTS: Product[] = [
     "name": "Simple Refreshing Facial Wash",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$5.99",
+    "price": "$10.00",
     "image_url": "https://i.pinimg.com/736x/5b/bf/8e/5bbf8e44bd01217a4e1a313a4195b569.jpg",
     "benefits": [
       "Clean and simple formula with no harsh chemicals",
@@ -150,7 +150,7 @@ export const PRODUCTS: Product[] = [
     "name": "Neutrogena Oil-Free Acne Wash",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$6.99",
+    "price": "$10.99",
     "image_url": "https://i.pinimg.com/736x/71/75/a4/7175a4209f5f3853d5203a8e1140607f.jpg",
     "benefits": [
       "Contains 2% salicylic acid to treat and prevent acne",
@@ -179,7 +179,7 @@ export const PRODUCTS: Product[] = [
     "name": "PanOxyl Acne Foaming Wash",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$8.99",
+    "price": "$12.99",
     "image_url": "https://i.pinimg.com/736x/9b/32/35/9b3235987a223a5cc52474816a38c93f.jpg",
     "benefits": [
       "Contains benzoyl peroxide to kill acne-causing bacteria",
@@ -208,7 +208,7 @@ export const PRODUCTS: Product[] = [
     "name": "CeraVe Moisturizing Cream",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$19.99",
+    "price": "$23.99",
     "image_url": "https://i.pinimg.com/736x/2a/22/8b/2a228b3a0b8b3d8497b6154f9c26ffab.jpg",
     "benefits": [
       "Rich, non-greasy formula for very dry and sensitive skin",
@@ -237,7 +237,7 @@ export const PRODUCTS: Product[] = [
     "name": "Neutrogena Hydro Boost Hyaluronic Acid Hydrating Gel-Cream",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$7.99",
+    "price": "$11.99",
     "image_url": "https://i.pinimg.com/736x/cf/f8/70/cff870c8a70014b6c85c26e41fe29524.jpg",
     "benefits": [
       "Lightweight gel-cream with hyaluronic acid for hydration",
@@ -266,7 +266,7 @@ export const PRODUCTS: Product[] = [
     "name": "Cetaphil Moisturizing Lotion",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$8.99",
+    "price": "$12.99",
     "image_url": "https://i.pinimg.com/1200x/1c/27/55/1c2755d695bbe90273f47128dd741ee6.jpg",
     "benefits": [
       "Lightweight, non-greasy moisturizer for all skin types",
@@ -295,7 +295,7 @@ export const PRODUCTS: Product[] = [
     "name": "Aveeno Daily Moisturizing Lotion",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$6.99",
+    "price": "$10.99",
     "image_url": "https://i.pinimg.com/736x/96/58/46/965846621c59e74844fc9a321aa114ad.jpg",
     "benefits": [
       "Lightweight, fast-absorbing lotion with oat extract",
@@ -324,7 +324,7 @@ export const PRODUCTS: Product[] = [
     "name": "Embryolisse Lait-Crème Concentré",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$24.99",
+    "price": "$28.99",
     "image_url": "https://i.pinimg.com/736x/2a/f5/6f/2af56f479603e04d4a5b40d897eafae3.jpg",
     "benefits": [
       "Rich, creamy moisturizer with balancing formula",
@@ -353,7 +353,7 @@ export const PRODUCTS: Product[] = [
     "name": "La Roche-Posay Toleriane Double Repair Face Moisturizer",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$14.99",
+    "price": "$18.99",
     "image_url": "https://i.pinimg.com/736x/87/b2/3e/87b23e48952276b14613cdbaed058d38.jpg",
     "benefits": [
       "Lightweight, oil-free moisturizer for dry, sensitive skin",
@@ -382,7 +382,7 @@ export const PRODUCTS: Product[] = [
     "name": "Olay Regenerist Micro-Sculpting Cream",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$12.99",
+    "price": "$16.99",
     "image_url": "https://i.pinimg.com/736x/7b/13/5c/7b135c74b418836275980e92d7287fcf.jpg",
     "benefits": [
       "Anti-aging moisturizer with micro-lifting technology",
@@ -411,7 +411,7 @@ export const PRODUCTS: Product[] = [
     "name": "Neutrogena Ultra Sheer Dry-Touch Sunscreen",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$8.99",
+    "price": "$12.99",
     "image_url": "https://i.pinimg.com/736x/25/b8/d4/25b8d4a38175439b437aad4a99315133.jpg",
     "benefits": [
       "Broad spectrum SPF 70+ protection against UVA/UVB rays",
@@ -440,7 +440,7 @@ export const PRODUCTS: Product[] = [
     "name": "La Roche-Posay Anthelios Ultra-Light Mineral Sunscreen",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$18.99",
+    "price": "$22.99",
     "image_url": "https://i.pinimg.com/1200x/72/80/a4/7280a4c0bffc17e17213344268a40380.jpg",
     "benefits": [
       "Mineral sunscreen with titanium dioxide and zinc oxide",
@@ -469,7 +469,7 @@ export const PRODUCTS: Product[] = [
     "name": "Supergoop Unseen Sunscreen SPF 40",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$38.00",
+    "price": "$42.00",
     "image_url": "https://i.pinimg.com/736x/68/f7/7f/68f77f662835768b515d45a5064032d8.jpg",
     "benefits": [
       "Invisible, weightless sunscreen that doesn't leave white cast",
@@ -498,7 +498,7 @@ export const PRODUCTS: Product[] = [
     "name": "Biore UV Aqua Rich Watery Essence",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$7.99",
+    "price": "$11.99",
     "image_url": "https://i.pinimg.com/736x/71/95/c4/7195c4eea780377333f76cd00ee862fc.jpg",
     "benefits": [
       "Japanese sunscreen with watery, aqueous formula",
@@ -527,7 +527,7 @@ export const PRODUCTS: Product[] = [
     "name": "Black Girl Sunscreen SPF 30",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$24.99",
+    "price": "$28.99",
     "image_url": "https://i.pinimg.com/1200x/7e/22/d9/7e22d9faeede7206e134d62f4560fa0a.jpg",
     "benefits": [
       "Mineral sunscreen formulated for deeper skin tones",
@@ -556,7 +556,7 @@ export const PRODUCTS: Product[] = [
     "name": "Nivea Sun Protect & Moisture Sunscreen",
     "category": "skincare",
     "subcategory": "sunscreen",
-    "price": "$7.99",
+    "price": "$11.99",
     "image_url": "https://i.pinimg.com/736x/10/95/3c/10953c81de9e3ad1e8baed8a79372e94.jpg",
     "benefits": [
       "Combines sun protection with moisturizing benefits",
@@ -585,7 +585,7 @@ export const PRODUCTS: Product[] = [
     "name": "The Ordinary Niacinamide 10% + Zinc 1%",
     "category": "skincare",
     "subcategory": "serums",
-    "price": "$6.99",
+    "price": "$10.99",
     "image_url": "https://i.pinimg.com/736x/10/e9/09/10e909c799aec29b8056e8462e0b5ffc.jpg",
     "benefits": [
       "High-strength vitamin and mineral blemish formula",
@@ -614,7 +614,7 @@ export const PRODUCTS: Product[] = [
     "name": "Hyals Hydrating Serum with Hyaluronic Acid",
     "category": "skincare",
     "subcategory": "serums",
-    "price": "$12.99",
+    "price": "$16.99",
     "image_url": "https://i.pinimg.com/1200x/d7/98/b4/d798b4d68a0c6b7d53234ae70b80d1e7.jpg",
     "benefits": [
       "Lightweight serum for intense moisture",
@@ -643,7 +643,7 @@ export const PRODUCTS: Product[] = [
     "name": "Paula's Choice Skin Perfecting 2% BHA Liquid Exfoliant",
     "category": "skincare",
     "subcategory": "exfoliants",
-    "price": "$34.00",
+    "price": "$38.00",
     "image_url": "https://i.pinimg.com/1200x/83/34/ca/8334caf4b8a8e0236adc68dfbcf155b4.jpg",
     "benefits": [
       "Salicylic acid (BHA) dissolves pore-clogging debris",
@@ -672,7 +672,7 @@ export const PRODUCTS: Product[] = [
     "name": "The Ordinary AHA 30% + BHA 2% Peeling Solution",
     "category": "skincare",
     "subcategory": "exfoliants",
-    "price": "$9.50",
+    "price": "$13.50",
     "image_url": "https://i.pinimg.com/1200x/22/65/df/2265df356e56d92776af495547a7e462.jpg",
     "benefits": [
       "High-concentration alpha hydroxy acids (AHA) and beta hydroxy acids (BHA)",
@@ -701,7 +701,7 @@ export const PRODUCTS: Product[] = [
     "name": "Thayers Witch Hazel Facial Toner with Aloe Vera",
     "category": "skincare",
     "subcategory": "toners",
-    "price": "$10.99",
+    "price": "$14.99",
     "image_url": "https://i.pinimg.com/736x/ac/bc/77/acbc77e5d0847582b8ce97bd7a7e693c.jpg",
     "benefits": [
       "Alcohol-free toner cleanses, tones, and moisturizes",
@@ -730,7 +730,7 @@ export const PRODUCTS: Product[] = [
     "name": "Laneige Cream Skin Refiner",
     "category": "skincare",
     "subcategory": "toners",
-    "price": "$33.00",
+    "price": "$37.00",
     "image_url": "https://i.pinimg.com/1200x/2b/50/fe/2b50fe596d08f9fc375fad40d3a08242.jpg",
     "benefits": [
       "2-in-1 hybrid toner and moisturizer",
@@ -759,7 +759,7 @@ export const PRODUCTS: Product[] = [
     "name": "Maybelline Fit Me Matte + Poreless Foundation",
     "category": "makeup",
     "subcategory": "foundation",
-    "price": "$6.99",
+    "price": "$10.99",
     "image_url": "https://i.pinimg.com/736x/0c/f9/1e/0cf91edb1c66c8d6793eb20f5d9edc4e.jpg",
     "benefits": [
       "Natural-looking matte finish foundation",
@@ -788,7 +788,7 @@ export const PRODUCTS: Product[] = [
     "name": "L'Oréal True Match Super-Blendable Foundation",
     "category": "makeup",
     "subcategory": "foundation",
-    "price": "$10.00",
+    "price": "$14.00",
     "image_url": "https://i.pinimg.com/736x/98/1a/27/981a27e045c07c0ac79f1b3b4e6878c1.jpg",
     "benefits": [
       "Super-blendable formula matches skin's unique undertones",
@@ -817,7 +817,7 @@ export const PRODUCTS: Product[] = [
     "name": "Estée Lauder Double Wear Stay-in-Place Foundation",
     "category": "makeup",
     "subcategory": "foundation",
-    "price": "$38.00",
+    "price": "$42.00",
     "image_url": "https://i.pinimg.com/1200x/c1/56/97/c156970ef669445dfec4db7d31614d26.jpg",
     "benefits": [
       "24-hour long-wear foundation with matte finish",
@@ -846,7 +846,7 @@ export const PRODUCTS: Product[] = [
     "name": "L'Oréal True Match Super-Blendable Foundation",
     "category": "makeup",
     "subcategory": "foundation",
-    "price": "$9.99",
+    "price": "$13.99",
     "image_url": "https://i.pinimg.com/736x/98/1a/27/981a27e045c07c0ac79f1b3b4e6878c1.jpg",
     "benefits": [
       "Lightweight foundation that matches 100% of skin tones",
@@ -875,7 +875,7 @@ export const PRODUCTS: Product[] = [
     "name": "Tarte Shape Tape Full Coverage Concealer",
     "category": "makeup",
     "subcategory": "concealer",
-    "price": "$28.00",
+    "price": "$32.00",
     "image_url": "https://i.pinimg.com/736x/16/53/a2/1653a2fd757b613575db588722dc3881.jpg",
     "benefits": [
       "Award-winning full coverage concealer",
@@ -904,7 +904,7 @@ export const PRODUCTS: Product[] = [
     "name": "Maybelline Instant Age Rewind Eraser Multi-Use Concealer",
     "category": "makeup",
     "subcategory": "concealer",
-    "price": "$8.99",
+    "price": "$12.99",
     "image_url": "https://i.pinimg.com/1200x/ec/f5/a0/ecf5a0d85bb97e7efa59187ba15ebcf2.jpg",
     "benefits": [
       "Multi-use concealer with built-in sponge applicator",
@@ -933,7 +933,7 @@ export const PRODUCTS: Product[] = [
     "name": "Maybelline SuperStay Matte Ink Liquid Lipstick",
     "category": "makeup",
     "subcategory": "lip products",
-    "price": "$9.49",
+    "price": "$13.49",
     "image_url": "https://i.pinimg.com/736x/7a/af/61/7aaf6134926fae774420592d6e6de4ed.jpg",
     "benefits": [
       "16-hour long-wear liquid lipstick with matte finish",
@@ -962,7 +962,7 @@ export const PRODUCTS: Product[] = [
     "name": "Fenty Beauty Gloss Bomb Universal Lip Luminizer",
     "category": "makeup",
     "subcategory": "lip products",
-    "price": "$21.00",
+    "price": "$25.00",
     "image_url": "https://i.pinimg.com/736x/df/eb/fe/dfebfe6b3586fb4bdf669b5f930d48b8.jpg",
     "benefits": [
       "Ultimate high-shine lip gloss for all skin tones",
@@ -991,7 +991,7 @@ export const PRODUCTS: Product[] = [
     "name": "MAC Matte Lipstick",
     "category": "makeup",
     "subcategory": "lip products",
-    "price": "$19.00",
+    "price": "$23.00",
     "image_url": "https://i.pinimg.com/1200x/87/df/e1/87dfe19e50d8fbd9e1b8af32104a371a.jpg",
     "benefits": [
       "Iconic matte lipstick with high color payoff",
@@ -1020,7 +1020,7 @@ export const PRODUCTS: Product[] = [
     "name": "L'Oréal Voluminous Lash Paradise Mascara",
     "category": "makeup",
     "subcategory": "mascara",
-    "price": "$10.99",
+    "price": "$14.99",
     "image_url": "https://i.pinimg.com/736x/fd/70/32/fd7032871d1f5b70efabf40fafffbee6.jpg",
     "benefits": [
       "Volumizing and lengthening mascara for intense look",
@@ -1049,7 +1049,7 @@ export const PRODUCTS: Product[] = [
     "name": "Maybelline Lash Sensational Sky High Mascara",
     "category": "makeup",
     "subcategory": "mascara",
-    "price": "$12.99",
+    "price": "$16.99",
     "image_url": "https://i.pinimg.com/1200x/2b/3a/a2/2b3aa20be4cba883ce14c955bb775381.jpg",
     "benefits": [
       "Lengthening mascara with exclusive Flex Tower brush",
@@ -1078,7 +1078,7 @@ export const PRODUCTS: Product[] = [
     "name": "Stila Stay All Day Waterproof Liquid Eye Liner",
     "category": "makeup",
     "subcategory": "eyeliner",
-    "price": "$24.00",
+    "price": "$28.00",
     "image_url": "https://i.pinimg.com/736x/4d/d7/6d/4dd76dab471cde92ab4368e226db6966.jpg",
     "benefits": [
       "Waterproof liquid eyeliner with precise felt tip applicator",
@@ -1107,7 +1107,7 @@ export const PRODUCTS: Product[] = [
     "name": "NYX Professional Makeup Epic Ink Liner",
     "category": "makeup",
     "subcategory": "eyeliner",
-    "price": "$9.00",
+    "price": "$13.00",
     "image_url": "https://i.pinimg.com/736x/f9/b4/e3/f9b4e3c85e11ca31c3a6f732db99a57a.jpg",
     "benefits": [
       "Professional-grade liquid eyeliner with brush tip",
@@ -1136,7 +1136,7 @@ export const PRODUCTS: Product[] = [
     "name": "Clinique Take The Day Off Cleansing Balm",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$38.00",
+    "price": "$42.00",
     "image_url": "https://i.pinimg.com/1200x/79/40/5e/79405eb4e6093988f3f018b40f19fa59.jpg",
     "benefits": [
       "Lightweight makeup remover dissolves stubborn makeup",
@@ -1165,7 +1165,7 @@ export const PRODUCTS: Product[] = [
     "name": "Glossier Milky Jelly Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$19.00",
+    "price": "$23.00",
     "image_url": "https://i.pinimg.com/1200x/9e/a3/af/9ea3af393bf8a3af93629310de4b46f1.jpg",
     "benefits": [
       "Conditioning face wash with bouncy, jelly texture",
@@ -1194,7 +1194,7 @@ export const PRODUCTS: Product[] = [
     "name": "CeraVe SA Smoothing Cleanser",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$12.99",
+    "price": "$16.99",
     "image_url": "https://i.pinimg.com/1200x/91/06/46/910646a94eda5a4304f50b2cf027ad52.jpg",
     "benefits": [
       "Exfoliating cleanser with salicylic acid (SA)",
@@ -1223,7 +1223,7 @@ export const PRODUCTS: Product[] = [
     "name": "Aveeno Calm + Restore Oat Gel Moisturizer",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$18.99",
+    "price": "$22.99",
     "image_url": "https://i.pinimg.com/736x/2a/c6/00/2ac600bb4d4b221259e3031652e250f3.jpg",
     "benefits": [
       "Instantly soothes and replenishes skin's moisture barrier",
@@ -1252,7 +1252,7 @@ export const PRODUCTS: Product[] = [
     "name": "Neutrogena Bright Boost Gel Cream",
     "category": "skincare",
     "subcategory": "moisturizers",
-    "price": "$22.49",
+    "price": "$26.49",
     "image_url": "https://i.pinimg.com/736x/bd/1a/40/bd1a40da47f34975e84fec5fda8dc3c7.jpg",
     "benefits": [
       "Visibly brightens and retextures skin",
@@ -1281,7 +1281,7 @@ export const PRODUCTS: Product[] = [
     "name": "The INKEY List Oat Cleansing Balm",
     "category": "skincare",
     "subcategory": "cleansers",
-    "price": "$10.99",
+    "price": "$14.99",
     "image_url": "https://i.pinimg.com/1200x/84/c4/dd/84c4dd27a3073e392f45fd7a4e4145f6.jpg",
     "benefits": [
       "Gently dissolves makeup and sunscreen",
@@ -1310,7 +1310,7 @@ export const PRODUCTS: Product[] = [
     "name": "The Ordinary Retinol 0.2% in Squalane",
     "category": "skincare",
     "subcategory": "serums",
-    "price": "$7.00",
+    "price": "$11.00",
     "image_url": "https://i.pinimg.com/736x/5f/0f/bb/5f0fbbb81bde904a67f4faed22fd78c8.jpg",
     "benefits": [
       "Advanced retinol serum for anti-aging",
@@ -1339,7 +1339,7 @@ export const PRODUCTS: Product[] = [
     "name": "The Ordinary Vitamin C Suspension 23% + HA Spheres 2%",
     "category": "skincare",
     "subcategory": "serums",
-    "price": "$6.50",
+    "price": "$10.50",
     "image_url": "https://i.pinimg.com/1200x/83/3b/21/833b21016070d5d049be760ccb6ed7e8.jpg",
     "benefits": [
       "Stable vitamin C suspension for brightening",
@@ -1368,7 +1368,7 @@ export const PRODUCTS: Product[] = [
     "name": "Glow Recipe Watermelon Glow PHA + BHA Pore-Tight Toner",
     "category": "skincare",
     "subcategory": "toners",
-    "price": "$34.00",
+    "price": "$38.00",
     "image_url": "https://i.pinimg.com/736x/6b/3c/ac/6b3cacc0521f07f5ad0bf222cfabd547.jpg",
     "benefits": [
       "Gentle PHA and BHA for pore-tightening and smoothing",
@@ -1397,7 +1397,7 @@ export const PRODUCTS: Product[] = [
     "name": "Paula's Choice Skin Recovery Enriched Calming Toner",
     "category": "skincare",
     "subcategory": "toners",
-    "price": "$22.00",
+    "price": "$26.00",
     "image_url": "https://i.pinimg.com/1200x/cb/0f/7f/cb0f7fef35356698e1d80596758aa803.jpg",
     "benefits": [
       "Milky, soothing toner for dry to very dry skin",
@@ -1426,7 +1426,7 @@ export const PRODUCTS: Product[] = [
     "name": "Fenty Beauty Eaze Drop Blurring Skin Tint",
     "category": "makeup",
     "subcategory": "foundation",
-    "price": "$32.00",
+    "price": "$36.00",
     "image_url": "https://i.pinimg.com/736x/0f/a9/be/0fa9be9723bdef3292b718eb3b0bf758.jpg",
     "benefits": [
       "Lightweight, blurring skin tint with natural finish",
@@ -1455,7 +1455,7 @@ export const PRODUCTS: Product[] = [
     "name": "Rare Beauty Liquid Touch Brightening Concealer",
     "category": "makeup",
     "subcategory": "concealer",
-    "price": "$19.00",
+    "price": "$23.00",
     "image_url": "https://i.pinimg.com/736x/be/a9/5d/bea95d389bdd7804143e96dd1ca6e089.jpg",
     "benefits": [
       "Lightweight, breathable concealer with brightening finish",
@@ -1484,7 +1484,7 @@ export const PRODUCTS: Product[] = [
     "name": "Laneige Lip Sleeping Mask",
     "category": "makeup",
     "subcategory": "lip products",
-    "price": "$24.00",
+    "price": "$28.00",
     "image_url": "https://i.pinimg.com/1200x/77/37/e5/7737e5390a46c1063557ae093df314c6.jpg",
     "benefits": [
       "Leave-on lip mask that soothes and moisturizes overnight",
@@ -1513,7 +1513,7 @@ export const PRODUCTS: Product[] = [
     "name": "Burt's Bees Beeswax Lip Balm",
     "category": "makeup",
     "subcategory": "lip products",
-    "price": "$3.99",
+    "price": "$10.00",
     "image_url": "https://i.pinimg.com/1200x/7f/88/1b/7f881b50c1adc3e50033a5702e6cf814.jpg",
     "benefits": [
       "Original beeswax lip balm that naturally protects and hydrates",
@@ -1542,7 +1542,7 @@ export const PRODUCTS: Product[] = [
     "name": "Heroine Make Long & Curl Mascara Super Waterproof",
     "category": "makeup",
     "subcategory": "mascara",
-    "price": "$12.00",
+    "price": "$16.00",
     "image_url": "https://i.pinimg.com/736x/72/64/c8/7264c8fd1161eb381da92c2c9c354e1e.jpg",
     "benefits": [
       "Japanese cult-favorite mascara for extreme length and curl",
@@ -1571,7 +1571,7 @@ export const PRODUCTS: Product[] = [
     "name": "Benefit They're Real! Lengthening Mascara",
     "category": "makeup",
     "subcategory": "mascara",
-    "price": "$28.00",
+    "price": "$32.00",
     "image_url": "https://i.pinimg.com/1200x/cb/29/d9/cb29d94b07a18699558838dd88e61647.jpg",
     "benefits": [
       "Lengthens, curls, volumizes, lifts, and separates lashes",
@@ -1600,7 +1600,7 @@ export const PRODUCTS: Product[] = [
     "name": "Stila HUGE Extreme Lash Mascara",
     "category": "makeup",
     "subcategory": "mascara",
-    "price": "$24.00",
+    "price": "$28.00",
     "image_url": "https://i.pinimg.com/1200x/5a/24/2d/5a242df3ce004f79489a103656684ea1.jpg",
     "benefits": [
       "Extreme volumizing mascara for bigger, bolder lashes",
@@ -1629,7 +1629,7 @@ export const PRODUCTS: Product[] = [
     "name": "KVD Beauty Tattoo Liner Waterfront Liquid Eyeliner",
     "category": "makeup",
     "subcategory": "eyeliner",
-    "price": "$25.00",
+    "price": "$29.00",
     "image_url": "https://i.pinimg.com/736x/02/9f/d9/029fd961854cbc2d485b55c3e525f223.jpg",
     "benefits": [
       "Award-winning waterproof liquid eyeliner with precise brush tip",
@@ -1658,7 +1658,7 @@ export const PRODUCTS: Product[] = [
     "name": "MAC Technakohl Liner",
     "category": "makeup",
     "subcategory": "eyeliner",
-    "price": "$19.00",
+    "price": "$23.00",
     "image_url": "https://i.pinimg.com/736x/f0/6a/64/f06a6474cf8d93d97186540af8c5f2a4.jpg",
     "benefits": [
       "Retractable eye liner with creamy, smooth formula",
@@ -1687,7 +1687,7 @@ export const PRODUCTS: Product[] = [
     "name": "Anastasia Beverly Hills Brow Wiz",
     "category": "makeup",
     "subcategory": "eyeliner",
-    "price": "$25.00",
+    "price": "$29.00",
     "image_url": "https://i.pinimg.com/1200x/b9/0d/e2/b90de2deacd7e3ccf9ec8ad7a63f042f.jpg",
     "benefits": [
       "Ultra-slim retractable brow pencil for professional results",

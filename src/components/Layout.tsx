@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, User, Search, X, ChevronRight, Leaf, ShoppingBag, Instagram, Youtube, Mail, ArrowRight, Music2, Pin } from 'lucide-react';
-import { Link, NavLink } from 'react-router-dom';
+import { Menu, User, Search, X, ChevronRight, Leaf, ShoppingBag, Instagram, Youtube, Mail, ArrowRight, Music2, Pin, LogOut } from 'lucide-react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   onOpenSearch: () => void;
 }
 
 export function Header({ onOpenSearch }: HeaderProps) {
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -76,6 +79,11 @@ export function Header({ onOpenSearch }: HeaderProps) {
     setIsMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <motion.header 
       initial={{ y: 0 }}
@@ -92,65 +100,85 @@ export function Header({ onOpenSearch }: HeaderProps) {
           <GlowSkinLogo />
         </Link>
         
-        <nav className="hidden lg:flex items-center space-x-10">
-          <NavLink to="/" className="text-[13px] uppercase tracking-[0.2em] font-semibold text-white hover:text-[#C8A49F] transition-colors">
+        <nav className="hidden lg:flex items-center space-x-12">
+          <NavLink to="/" className="text-[12px] uppercase tracking-[0.3em] font-bold text-white hover:text-[#C8A49F] transition-colors">
             Home
           </NavLink>
-          
-          {navSections.map((section) => (
-            <div 
-              key={section.id}
-              className="relative group py-2"
-              onMouseEnter={() => setActiveDropdown(section.id)}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button className={`text-[13px] uppercase tracking-[0.2em] font-semibold flex items-center gap-1 transition-colors ${activeDropdown === section.id ? 'text-[#C8A49F]' : 'text-white hover:text-[#C8A49F]'}`}>
-                {section.label}
-              </button>
-              
-              <AnimatePresence>
-                {activeDropdown === section.id && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 w-64 bg-[#2C0F12] border-t-2 border-[#C8A49F] shadow-2xl py-6 px-2 mt-2 rounded-b-lg"
-                  >
-                    <div className="flex flex-col gap-2">
-                      {section.items.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={item.path}
-                          className="px-6 py-3 text-[12px] text-white hover:text-[#C8A49F] hover:bg-[#C8A49F]/5 transition-all uppercase tracking-widest font-medium rounded-md"
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-
-          <NavLink to="/contact" className="text-[13px] uppercase tracking-[0.2em] font-semibold text-white hover:text-[#C8A49F] transition-colors">
-            Contact
+          <NavLink to="/collections" className="text-[12px] uppercase tracking-[0.3em] font-bold text-white hover:text-[#C8A49F] transition-colors">
+            Shop
           </NavLink>
+          <div 
+            className="relative group py-2"
+            onMouseEnter={() => setActiveDropdown('info')}
+            onMouseLeave={() => setActiveDropdown(null)}
+          >
+            <button className={`text-[12px] uppercase tracking-[0.3em] font-bold flex items-center gap-1 transition-colors ${activeDropdown === 'info' ? 'text-[#C8A49F]' : 'text-white hover:text-[#C8A49F]'}`}>
+              Info
+            </button>
+            
+            <AnimatePresence>
+              {activeDropdown === 'info' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 w-48 bg-[#2C0F12] border-t-2 border-[#C8A49F] shadow-2xl py-4 px-2 mt-2 rounded-b-lg overflow-hidden"
+                >
+                  <div className="flex flex-col gap-1">
+                    <Link
+                      to="/about"
+                      className="px-6 py-3 text-[11px] text-white hover:text-[#C8A49F] hover:bg-[#C8A49F]/5 transition-all uppercase tracking-widest font-bold rounded-md"
+                      onClick={() => setActiveDropdown(null)}
+                    >
+                      About
+                    </Link>
+                    <Link
+                      to="/contact"
+                      className="px-6 py-3 text-[11px] text-white hover:text-[#C8A49F] hover:bg-[#C8A49F]/5 transition-all uppercase tracking-widest font-bold rounded-md"
+                      onClick={() => setActiveDropdown(null)}
+                    >
+                      Contact
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </nav>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-6 md:space-x-8">
           <button 
             onClick={onOpenSearch}
             className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
           >
-            <Search size={22} />
+            <Search size={20} />
           </button>
-          <Link 
-            to="/profile"
-            className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors relative"
-          >
-            <User size={22} />
-          </Link>
+          <div className="flex items-center gap-4">
+            {isAuthenticated ? (
+              <div className="hidden md:flex items-center gap-4 text-[10px] uppercase tracking-[0.2em] font-bold">
+                <Link to="/profile" className="text-white hover:text-[#C8A49F] transition-colors flex items-center gap-2">
+                  <User size={20} className="text-[#C8A49F]" />
+                  <span className="hidden xl:block">{user?.name.split(' ')[0]}</span>
+                </Link>
+                <button onClick={handleLogout} className="text-[#C8A49F]/40 hover:text-[#FF6B6B] transition-colors">
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/auth/signup"
+                className="hidden md:block text-[10px] uppercase tracking-[0.2em] font-bold text-[#C8A49F]/60 hover:text-white transition-colors border-b border-transparent hover:border-[#C8A49F] pb-1"
+              >
+                Sign Up
+              </Link>
+            )}
+            <Link 
+              to="/profile"
+              className="md:hidden text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
+            >
+              <User size={20} />
+            </Link>
+          </div>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
@@ -176,30 +204,20 @@ export function Header({ onOpenSearch }: HeaderProps) {
               </button>
             </div>
 
-            <div className="flex flex-col py-12 px-8 space-y-6">
+            <div className="flex flex-col py-12 px-8 space-y-10 mt-12">
               <MobileNavItem to="/" label="Home" onClick={handleMobileClick} />
+              <MobileNavItem to="/collections" label="Shop" onClick={handleMobileClick} />
               
-              {navSections.map((section) => (
-                <div key={section.id} className="space-y-4">
-                  <span className="text-[11px] uppercase tracking-[0.3em] text-[#C8A49F]/60 font-bold block mb-4 border-b border-[#4D0E13]/10 pb-2">{section.label}</span>
-                  <div className="flex flex-col gap-4 pl-4 border-l border-[#C8A49F]/20">
-                    {section.items.map((item) => (
-                      <MobileNavItem 
-                        key={item.name} 
-                        to={item.path} 
-                        label={item.name} 
-                        onClick={handleMobileClick}
-                        sub
-                      />
-                    ))}
-                  </div>
+              <div className="space-y-6">
+                <span className="text-[11px] uppercase tracking-[0.3em] text-[#C8A49F]/60 font-bold block mb-4 border-b border-[#4D0E13]/10 pb-2">Info</span>
+                <div className="flex flex-col gap-6 pl-4 border-l border-[#C8A49F]/20">
+                  <MobileNavItem to="/about" label="About" onClick={handleMobileClick} sub />
+                  <MobileNavItem to="/contact" label="Contact" onClick={handleMobileClick} sub />
                 </div>
-              ))}
+              </div>
               
-              <MobileNavItem to="/contact" label="Contact" onClick={handleMobileClick} />
-              
-              <div className="pt-12 border-t border-[#4D0E13]/10 flex flex-col gap-6">
-                <MobileNavItem to="/profile" label="Account / Sign In" onClick={handleMobileClick} />
+              <div className="pt-12 border-t border-[#4D0E13]/10 flex flex-col gap-8">
+                <MobileNavItem to="/profile" label="Account" onClick={handleMobileClick} />
               </div>
             </div>
           </motion.div>
@@ -231,8 +249,6 @@ function MobileNavItem({ to, label, onClick, sub = false }: { to: string; label:
 }
 
 export function Footer() {
-  const [email, setEmail] = useState('');
-
   return (
     <footer className="bg-[#1A0809] border-t border-[#4D0E13] pt-24 pb-12 px-6 md:px-12 mt-32 overflow-hidden relative">
       <div className="max-w-[1400px] mx-auto">
@@ -263,7 +279,6 @@ export function Footer() {
           {/* Concierge Column */}
           <FooterSection title="Concierge">
             <li><Link to="/concierge/shipping" className="footer-link">Shipping</Link></li>
-            <li><Link to="/concierge/contact" className="footer-link">Contact</Link></li>
             <li><Link to="/concierge/faq" className="footer-link">FAQ</Link></li>
             <li><Link to="/concierge/track" className="footer-link">Track Order</Link></li>
           </FooterSection>
@@ -273,9 +288,6 @@ export function Footer() {
             <li><Link to="/legal/terms" className="footer-link">Terms of Service</Link></li>
             <li><Link to="/legal/refunds" className="footer-link">Refund Policy</Link></li>
             <li><Link to="/legal/privacy" className="footer-link">Privacy Policy</Link></li>
-            <li className="pt-6 border-t border-[#4D0E13]/20 mt-6">
-              <Link to="/admin/login" className="text-[11px] uppercase tracking-widest text-white/40 hover:text-[#C8A49F] transition-all italic underline underline-offset-4 decoration-[#C8A49F]/30">Curator Portal</Link>
-            </li>
           </FooterSection>
         </div>
 
@@ -292,29 +304,7 @@ export function Footer() {
              </div>
           </div>
 
-          <div className="w-full lg:w-auto">
-            <div className="p-8 bg-[#2C0F12] border border-[#4D0E13]/30 rounded-3xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-[#C8A49F]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#C8A49F]/10 transition-colors duration-1000"></div>
-              <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#C8A49F]/60 mb-4">Stay Connected</h4>
-              <p className="text-[11px] text-[#C8A49F]/40 mb-6 max-w-xs leading-relaxed">Receive seasonal insights & exclusive early access to new collections.</p>
-              <form 
-                onSubmit={(e) => { e.preventDefault(); setEmail(''); }}
-                className="flex gap-4 items-center border-b border-[#4D0E13] pb-2 group-focus-within:border-[#C8A49F] transition-all"
-              >
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your email" 
-                  className="bg-transparent border-none text-white text-xs placeholder:text-[#C8A49F]/20 outline-none w-full lg:w-48" 
-                  required
-                />
-                <button type="submit" className="w-10 h-10 bg-[#C8A49F] text-[#4D0E13] flex items-center justify-center rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(200,164,159,0.3)]">
-                  <ArrowRight size={18} />
-                </button>
-              </form>
-            </div>
-          </div>
+
         </div>
       </div>
     </footer>

@@ -1,17 +1,62 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
   ChevronRight, Truck, CreditCard, ShieldCheck, 
   CheckCircle2, ArrowRight, ArrowLeft 
 } from 'lucide-react';
 import { Product } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 type Step = 'shipping' | 'payment' | 'confirmation';
 
 export function CheckoutView() {
+  const { isAuthenticated } = useAuth();
   const [step, setStep] = useState<Step>('shipping');
   const [shippingMethod, setShippingMethod] = useState('std');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'mpesa'>('card');
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const purchaseData = location.state as { product: Product; qty: number } | null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#1A0809] flex items-center justify-center pt-32 pb-20 px-6">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-lg w-full bg-[#0A0E27] border border-[#1DB679] p-12 rounded-3xl shadow-2xl text-center"
+        >
+          <div className="w-16 h-16 bg-[#1DB679]/10 rounded-full flex items-center justify-center mx-auto mb-8">
+            <ShieldCheck size={32} className="text-[#1DB679]" />
+          </div>
+          <h2 className="font-serif text-3xl text-white italic mb-4">Collective Member Exclusive</h2>
+          <p className="text-[#B0B0B0] text-sm mb-10 leading-relaxed">To ensure the sanctity of our procurement process and provide precise logistical tracking, acquisition is currently reserved for our registered collective members.</p>
+          
+          <div className="space-y-4">
+            <Link 
+              to="/auth/signup"
+              className="block w-full bg-[#1DB679] text-white py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_20px_rgba(29,182,121,0.3)] transition-all text-center"
+            >
+              Sign Up / Join Us
+            </Link>
+            <Link 
+              to="/auth/signin"
+              className="block w-full border border-white/10 text-white/40 py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:text-white hover:border-white/20 transition-all text-center"
+            >
+              Already a member? Sign In
+            </Link>
+          </div>
+
+          <p className="mt-8 text-[10px] text-[#B0B0B0] uppercase tracking-widest leading-loose">
+            By joining, you agree to our <Link to="/legal/terms" className="text-white underline cursor-pointer">Sanctuary Terms</Link> & <Link to="/legal/privacy" className="text-white underline cursor-pointer">Privacy Protocol</Link>.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   const [shippingDetails, setShippingDetails] = useState({
     name: '',
     email: '',
@@ -22,13 +67,10 @@ export function CheckoutView() {
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '',
     expiry: '',
-    cvv: ''
+    cvv: '',
+    phone: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  const purchaseData = location.state as { product: Product; qty: number } | null;
 
   const validateShipping = () => {
     const newErrors: Record<string, string> = {};
@@ -44,9 +86,13 @@ export function CheckoutView() {
 
   const validatePayment = () => {
     const newErrors: Record<string, string> = {};
-    if (!paymentDetails.cardNumber || paymentDetails.cardNumber.length < 16) newErrors.cardNumber = 'Valid identifier required';
-    if (!paymentDetails.expiry || paymentDetails.expiry.length < 4) newErrors.expiry = 'Expiration required (MM/YY)';
-    if (!paymentDetails.cvv || paymentDetails.cvv.length < 3) newErrors.cvv = 'Cryptogram required';
+    if (paymentMethod === 'card') {
+      if (!paymentDetails.cardNumber || paymentDetails.cardNumber.length < 16) newErrors.cardNumber = 'Valid identifier required';
+      if (!paymentDetails.expiry || paymentDetails.expiry.length < 4) newErrors.expiry = 'Expiration required (MM/YY)';
+      if (!paymentDetails.cvv || paymentDetails.cvv.length < 3) newErrors.cvv = 'Cryptogram required';
+    } else {
+      if (!paymentDetails.phone || paymentDetails.phone.length < 10) newErrors.phone = 'Valid M-Pesa number required';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -234,48 +280,94 @@ export function CheckoutView() {
                 {step === 'payment' && (
                   <div className="max-w-2xl mx-auto md:mx-0">
                     <h2 className="font-serif text-5xl text-slate-50 italic mb-12 text-center md:text-left">Pecuniary Settlement</h2>
+                    
+                    {/* Payment Method Selector */}
+                    <div className="flex gap-4 mb-8">
+                      <button 
+                        onClick={() => setPaymentMethod('card')}
+                        className={`flex-1 py-4 px-6 border text-[10px] uppercase tracking-widest font-bold font-sans transition-all flex items-center justify-center gap-3
+                          ${paymentMethod === 'card' ? 'border-brand-emerald bg-brand-emerald/10 text-white' : 'border-brand-border text-slate-500 hover:border-slate-600'}
+                        `}
+                      >
+                        <CreditCard size={16} />
+                        Card
+                      </button>
+                      <button 
+                        onClick={() => setPaymentMethod('mpesa')}
+                        className={`flex-1 py-4 px-6 border text-[10px] uppercase tracking-widest font-bold font-sans transition-all flex items-center justify-center gap-3
+                          ${paymentMethod === 'mpesa' ? 'border-brand-emerald bg-brand-emerald/10 text-white' : 'border-brand-border text-slate-500 hover:border-slate-600'}
+                        `}
+                      >
+                        <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center text-[10px] font-black italic text-white">M</div>
+                        M-Pesa
+                      </button>
+                    </div>
+
                     <div className="bg-brand-charcoal border border-brand-border p-10 lg:p-12 space-y-10">
-                      <div className="space-y-4">
-                        <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vault Identifier</label>
-                        <div className="relative">
-                          <input 
-                            type="text" 
-                            value={paymentDetails.cardNumber.replace(/\D/g, '').match(/.{1,4}/g)?.join(' ') || ''}
-                            onChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16) })}
-                            className={`w-full bg-brand-black border p-5 pr-16 text-sm text-slate-200 tracking-[0.3em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.cardNumber ? 'border-red-500/50' : 'border-brand-border'}`} 
-                            placeholder="XXXX XXXX XXXX XXXX" 
-                          />
-                          <div className="absolute right-5 top-5 flex gap-2">
-                            <CreditCard size={18} className="text-slate-600" />
+                      {paymentMethod === 'card' ? (
+                        <>
+                          <div className="space-y-4">
+                            <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vault Identifier</label>
+                            <div className="relative">
+                              <input 
+                                type="text" 
+                                value={paymentDetails.cardNumber.replace(/\D/g, '').match(/.{1,4}/g)?.join(' ') || ''}
+                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16) })}
+                                className={`w-full bg-brand-black border p-5 pr-16 text-sm text-slate-200 tracking-[0.3em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.cardNumber ? 'border-red-500/50' : 'border-brand-border'}`} 
+                                placeholder="XXXX XXXX XXXX XXXX" 
+                              />
+                              <div className="absolute right-5 top-5 flex gap-2">
+                                <CreditCard size={18} className="text-slate-600" />
+                              </div>
+                            </div>
+                            {errors.cardNumber && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.cardNumber}</p>}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                              <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Expiration</label>
+                              <input 
+                                type="text" 
+                                value={paymentDetails.expiry.replace(/\D/g, '').match(/.{1,2}/g)?.join(' / ').slice(0, 7) || ''}
+                                onChange={(e) => setPaymentDetails({ ...paymentDetails, expiry: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                                className={`w-full bg-brand-black border p-5 text-sm text-slate-200 tracking-[0.2em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.expiry ? 'border-red-500/50' : 'border-brand-border'}`} 
+                                placeholder="MM / YY" 
+                              />
+                              {errors.expiry && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.expiry}</p>}
+                            </div>
+                            <div className="space-y-4">
+                              <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Cryptogram (CVV)</label>
+                              <input 
+                                type="text" 
+                                value={paymentDetails.cvv}
+                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                                className={`w-full bg-brand-black border p-5 text-sm text-slate-200 tracking-[0.3em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.cvv ? 'border-red-500/50' : 'border-brand-border'}`} 
+                                placeholder="***" 
+                              />
+                              {errors.cvv && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.cvv}</p>}
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="bg-brand-black/50 border border-brand-emerald/20 p-6 rounded-lg mb-8">
+                            <p className="text-[10px] text-slate-400 uppercase tracking-widest italic leading-relaxed">
+                              Upon sanctioning, an M-Pesa STK push will be dispatched to your mobile artifact. Please authenticate the transaction with your pin.
+                            </p>
+                          </div>
+                          <div className="space-y-4">
+                            <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Mobile Artifact Number</label>
+                            <input 
+                              type="tel" 
+                              value={paymentDetails.phone}
+                              onChange={(e) => setPaymentDetails({ ...paymentDetails, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+                              className={`w-full bg-brand-black border p-5 text-sm text-slate-200 tracking-[0.3em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.phone ? 'border-red-500/50' : 'border-brand-border'}`} 
+                              placeholder="07XX XXX XXX" 
+                            />
+                            {errors.phone && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.phone}</p>}
                           </div>
                         </div>
-                        {errors.cardNumber && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.cardNumber}</p>}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                          <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Expiration</label>
-                          <input 
-                            type="text" 
-                            value={paymentDetails.expiry.replace(/\D/g, '').match(/.{1,2}/g)?.join(' / ').slice(0, 7) || ''}
-                            onChange={(e) => setPaymentDetails({ ...paymentDetails, expiry: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-                            className={`w-full bg-brand-black border p-5 text-sm text-slate-200 tracking-[0.2em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.expiry ? 'border-red-500/50' : 'border-brand-border'}`} 
-                            placeholder="MM / YY" 
-                          />
-                          {errors.expiry && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.expiry}</p>}
-                        </div>
-                        <div className="space-y-4">
-                          <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Cryptogram (CVV)</label>
-                          <input 
-                            type="text" 
-                            value={paymentDetails.cvv}
-                            onChange={(e) => setPaymentDetails({ ...paymentDetails, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-                            className={`w-full bg-brand-black border p-5 text-sm text-slate-200 tracking-[0.3em] font-mono focus:outline-none focus:border-brand-emerald transition-colors ${errors.cvv ? 'border-red-500/50' : 'border-brand-border'}`} 
-                            placeholder="***" 
-                          />
-                          {errors.cvv && <p className="text-[9px] text-red-500 uppercase tracking-widest font-bold">{errors.cvv}</p>}
-                        </div>
-                      </div>
+                      )}
 
                       <div className="pt-8 space-y-6">
                         <div className="flex items-center gap-4 text-slate-500 pb-8 border-b border-brand-border">
@@ -294,7 +386,7 @@ export function CheckoutView() {
                             onClick={handlePaymentAdvance}
                             className="px-12 py-5 bg-brand-emerald text-white text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-emerald-800 transition-all flex items-center gap-4"
                           >
-                            Sanction Payment
+                            {paymentMethod === 'card' ? 'Sanction Payment' : 'Initiate STK Push'}
                           </button>
                         </div>
                       </div>

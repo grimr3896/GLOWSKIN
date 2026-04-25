@@ -10,6 +10,10 @@ import { ProfileView } from './views/ProfileView';
 import { SearchView } from './views/SearchView';
 import { AdminView } from './views/AdminView';
 import { StaticPageView } from './views/StaticPageView';
+import { ContactView } from './views/ContactView';
+import { SignUpView } from './views/SignUpView';
+import { SignInView } from './views/SignInView';
+import { AuthProvider } from './context/AuthContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -24,15 +28,21 @@ export default function App() {
 
   return (
     <Router>
-      <ScrollToTop />
-      <div className="min-h-screen bg-[#1A0809] text-slate-300 flex flex-col">
-        <Header onOpenSearch={() => setShowSearch(true)} />
-        
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomeView />} />
-            
-            {/* Shop & Collections */}
+      <AuthProvider>
+        <ScrollToTop />
+        <div className="min-h-screen bg-[#1A0809] text-slate-300 flex flex-col">
+          <Header onOpenSearch={() => setShowSearch(true)} />
+          
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<HomeView />} />
+              
+              {/* Authenticated Routes */}
+              <Route path="/auth/signup" element={<SignUpView />} />
+              <Route path="/auth/signin" element={<SignInView />} />
+              <Route path="/auth/forgot" element={<StaticPageView />} />
+
+              {/* Shop & Collections */}
             <Route path="/shop" element={<CollectionView />} />
             <Route path="/shop/:category" element={<CollectionView />} />
             <Route path="/collections" element={<CollectionView />} />
@@ -54,7 +64,7 @@ export default function App() {
             <Route path="/concierge/contact" element={<StaticPageView />} />
             <Route path="/concierge/faq" element={<StaticPageView />} />
             <Route path="/concierge/track" element={<StaticPageView />} />
-            <Route path="/contact" element={<StaticPageView />} />
+            <Route path="/contact" element={<ContactView />} />
 
             {/* Legal */}
             <Route path="/legal/terms" element={<StaticPageView />} />
@@ -80,6 +90,7 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
+     </AuthProvider>
     </Router>
   );
 }
