@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Menu, User, Search, X, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Menu, User, Search, X, ChevronRight, Leaf, ShoppingBag, Instagram, Youtube, Mail, ArrowRight, Music2, Pin } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -9,6 +9,7 @@ interface HeaderProps {
 
 export function Header({ onOpenSearch }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -16,30 +17,59 @@ export function Header({ onOpenSearch }: HeaderProps) {
     const controlNavbar = () => {
       if (typeof window !== 'undefined') {
         const currentScrollY = window.scrollY;
-        
-        if (currentScrollY > lastScrollY && currentScrollY > 80 && !isMenuOpen) { // scroll down
+        if (currentScrollY > lastScrollY && currentScrollY > 80 && !isMenuOpen) {
           setIsVisible(false);
-        } else { // scroll up
+        } else {
           setIsVisible(true);
         }
-
-        // remember current page location to use in the next move
         setLastScrollY(currentScrollY);
       }
     };
-
     window.addEventListener('scroll', controlNavbar);
-
-    // cleanup function
-    return () => {
-      window.removeEventListener('scroll', controlNavbar);
-    };
+    return () => window.removeEventListener('scroll', controlNavbar);
   }, [lastScrollY, isMenuOpen]);
 
-  const navItems = [
-    { label: 'Shop All', path: '/shop' },
-    { label: 'Skincare', path: '/shop/skincare' },
-    { label: 'Makeup', path: '/shop/makeup' },
+  const navSections = [
+    { 
+      label: 'Collections', 
+      id: 'collections',
+      items: [
+        { name: 'All Products', path: '/collections' },
+        { name: 'Hydration Remedies', path: '/collections/hydration' },
+        { name: 'Anti-Aging Essences', path: '/collections/anti-aging' },
+        { name: 'Clarity Treatments', path: '/collections/clarity' },
+        { name: 'Sensitivity Support', path: '/collections/sensitivity' },
+        { name: 'Seasonal Collections', path: '/collections/seasonal' },
+      ]
+    },
+    { 
+      label: 'About', 
+      id: 'about',
+      items: [
+        { name: 'Our Story', path: '/about#story' },
+        { name: 'Sustainability', path: '/about#sustainability' },
+      ]
+    },
+    { 
+      label: 'Atelier', 
+      id: 'atelier',
+      items: [
+        { name: 'Our Origin', path: '/atelier/origin' },
+        { name: 'Sourcing', path: '/atelier/sourcing' },
+        { name: 'Sustainability', path: '/atelier/sustainability' },
+        { name: 'Rituals Guide', path: '/atelier/rituals' },
+      ]
+    },
+    { 
+      label: 'Concierge', 
+      id: 'concierge',
+      items: [
+        { name: 'Shipping Info', path: '/concierge/shipping' },
+        { name: 'Contact Us', path: '/concierge/contact' },
+        { name: 'FAQ', path: '/concierge/faq' },
+        { name: 'Track Order', path: '/concierge/track' },
+      ]
+    }
   ];
 
   const handleMobileClick = () => {
@@ -51,130 +81,135 @@ export function Header({ onOpenSearch }: HeaderProps) {
       initial={{ y: 0 }}
       animate={{ y: isVisible ? 0 : -100 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 w-full z-50 bg-brand-black/60 backdrop-blur-xl border-b border-brand-border/10"
+      className="fixed top-0 w-full z-50 bg-[#1A0809] border-b border-[#4D0E13]/30"
     >
-      <div className="flex justify-between items-center px-6 md:px-12 py-6 md:py-8">
+      <div className="flex justify-between items-center px-6 md:px-12 py-5 lg:py-6 max-w-[1600px] mx-auto">
         <Link 
           to="/"
-          className="text-xl md:text-2xl font-semibold tracking-tighter text-brand-surface uppercase font-serif"
+          className="text-xl md:text-2xl font-serif text-white hover:text-[#C8A49F] transition-all flex items-center gap-2 group"
           onClick={handleMobileClick}
         >
-          GlowSkin
+          <GlowSkinLogo />
         </Link>
         
-        <nav className="hidden md:flex items-center space-x-12">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              className={({ isActive }) => `font-serif font-light tracking-widest uppercase transition-all duration-500 ease-in-out pb-1
-                ${isActive ? 'text-brand-surface border-b border-brand-emerald-light' : 'text-brand-emerald-light/60 hover:text-brand-surface'}
-              `}
+        <nav className="hidden lg:flex items-center space-x-10">
+          <NavLink to="/" className="text-[13px] uppercase tracking-[0.2em] font-semibold text-white hover:text-[#C8A49F] transition-colors">
+            Home
+          </NavLink>
+          
+          {navSections.map((section) => (
+            <div 
+              key={section.id}
+              className="relative group py-2"
+              onMouseEnter={() => setActiveDropdown(section.id)}
+              onMouseLeave={() => setActiveDropdown(null)}
             >
-              {item.label}
-            </NavLink>
+              <button className={`text-[13px] uppercase tracking-[0.2em] font-semibold flex items-center gap-1 transition-colors ${activeDropdown === section.id ? 'text-[#C8A49F]' : 'text-white hover:text-[#C8A49F]'}`}>
+                {section.label}
+              </button>
+              
+              <AnimatePresence>
+                {activeDropdown === section.id && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 w-64 bg-[#2C0F12] border-t-2 border-[#C8A49F] shadow-2xl py-6 px-2 mt-2 rounded-b-lg"
+                  >
+                    <div className="flex flex-col gap-2">
+                      {section.items.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          className="px-6 py-3 text-[12px] text-white hover:text-[#C8A49F] hover:bg-[#C8A49F]/5 transition-all uppercase tracking-widest font-medium rounded-md"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           ))}
-          <NavLink
-            to="/profile"
-            className={({ isActive }) => `font-serif font-light tracking-widest uppercase transition-all duration-500 ease-in-out pb-1
-              ${isActive ? 'text-brand-surface border-b border-brand-emerald-light' : 'text-brand-emerald-light/60 hover:text-brand-surface'}
-            `}
-          >
-            Profile
+
+          <NavLink to="/contact" className="text-[13px] uppercase tracking-[0.2em] font-semibold text-white hover:text-[#C8A49F] transition-colors">
+            Contact
           </NavLink>
         </nav>
 
-        <div className="flex items-center space-x-6 md:space-x-8">
+        <div className="flex items-center space-x-6">
           <button 
             onClick={onOpenSearch}
-            className="hidden md:block text-brand-emerald-light hover:text-brand-surface transition-colors"
+            className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
           >
-            <Search size={20} />
+            <Search size={22} />
           </button>
           <Link 
             to="/profile"
-            className="hidden md:block text-brand-emerald-light hover:text-brand-surface transition-colors"
+            className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors relative"
           >
-            <User size={20} />
+            <User size={22} />
+          </Link>
+          <Link 
+            to="/cart"
+            className="text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors relative"
+          >
+            <ShoppingBag size={22} />
+            <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#C8A49F] text-[#4D0E13] text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+              2
+            </span>
           </Link>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-brand-emerald-light hover:text-brand-surface transition-colors md:hidden"
+            className="lg:hidden text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 bg-brand-black/80 backdrop-blur-2xl flex flex-col pt-32 pb-12 px-8 overflow-y-auto"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed inset-0 z-[60] bg-[#1A0809] border-r-2 border-[#C8A49F] lg:hidden flex flex-col overflow-y-auto"
           >
-            <button 
-              onClick={() => setIsMenuOpen(false)}
-              className="absolute top-8 right-8 text-brand-emerald hover:text-white transition-colors p-2"
-            >
-              <X size={32} />
-            </button>
+            <div className="flex justify-between items-center px-6 py-6 border-b border-[#4D0E13]/20">
+              <GlowSkinLogo />
+              <button onClick={() => setIsMenuOpen(false)} className="text-white p-2">
+                <X size={32} />
+              </button>
+            </div>
 
-            <div className="flex flex-col h-full max-w-lg mx-auto w-full">
-              {/* Navigation Links */}
-              <div className="space-y-10 mb-auto">
-                {navItems.map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + i * 0.1 }}
-                  >
-                    <Link
-                      to={item.path}
-                      onClick={handleMobileClick}
-                      className="flex justify-between items-center text-5xl font-serif italic text-brand-surface border-b border-brand-border/10 pb-6 group"
-                    >
-                      <span>{item.label}</span>
-                      <ChevronRight size={24} className="text-brand-emerald-light group-hover:translate-x-2 transition-transform" />
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Quick Actions & Bottom Info */}
-              <div className="mt-20 space-y-12">
-                <div className="grid grid-cols-2 gap-6">
-                  <button 
-                    onClick={() => {
-                      handleMobileClick();
-                      onOpenSearch();
-                    }}
-                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-emerald border border-brand-emerald-light/20 text-brand-surface rounded-3xl hover:bg-brand-emerald-light hover:text-white transition-colors shadow-2xl"
-                  >
-                    <Search size={24} />
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Search</span>
-                  </button>
-                  <Link 
-                    to="/profile"
-                    onClick={handleMobileClick}
-                    className="flex flex-col items-center justify-center gap-4 p-8 bg-brand-emerald border border-brand-emerald-light/20 text-brand-surface rounded-3xl hover:bg-brand-emerald-light hover:text-white transition-colors shadow-2xl"
-                  >
-                    <User size={24} />
-                    <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Account</span>
-                  </Link>
-                </div>
-
-                <div className="pt-8 border-t border-brand-border/10 flex justify-between items-center opacity-60">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-bold font-sans">Global Presence</span>
-                    <span className="text-[10px] text-brand-surface uppercase tracking-widest italic font-serif">London / Paris / Kyoto</span>
+            <div className="flex flex-col py-12 px-8 space-y-6">
+              <MobileNavItem to="/" label="Home" onClick={handleMobileClick} />
+              
+              {navSections.map((section) => (
+                <div key={section.id} className="space-y-4">
+                  <span className="text-[11px] uppercase tracking-[0.3em] text-[#C8A49F]/60 font-bold block mb-4 border-b border-[#4D0E13]/10 pb-2">{section.label}</span>
+                  <div className="flex flex-col gap-4 pl-4 border-l border-[#C8A49F]/20">
+                    {section.items.map((item) => (
+                      <MobileNavItem 
+                        key={item.name} 
+                        to={item.path} 
+                        label={item.name} 
+                        onClick={handleMobileClick}
+                        sub
+                      />
+                    ))}
                   </div>
-                  <span className="text-[10px] text-brand-emerald-light font-bold uppercase tracking-widest italic font-serif">Aesthetic Integrity</span>
                 </div>
+              ))}
+              
+              <MobileNavItem to="/contact" label="Contact" onClick={handleMobileClick} />
+              
+              <div className="pt-12 border-t border-[#4D0E13]/10 flex flex-col gap-6">
+                <MobileNavItem to="/profile" label="Account / Sign In" onClick={handleMobileClick} />
+                <MobileNavItem to="/cart" label="Your Bag (2)" onClick={handleMobileClick} />
               </div>
             </div>
           </motion.div>
@@ -184,60 +219,154 @@ export function Header({ onOpenSearch }: HeaderProps) {
   );
 }
 
-export function Footer() {
+function GlowSkinLogo() {
   return (
-    <footer className="bg-brand-black border-t border-brand-border pt-16 pb-32 md:pb-16 px-6 md:px-12 mt-24">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-        <div className="max-w-xs">
-          <Link to="/" className="text-xl font-semibold tracking-tighter text-brand-surface mb-6 uppercase block font-serif">GlowSkin</Link>
-          <p className="font-sans text-[10px] text-brand-emerald-light/60 leading-relaxed uppercase tracking-[0.2em] font-medium">
-            Discover a curated collection that harmonizes science with the purest natural ingredients.
-          </p>
+    <div className="flex items-center gap-2">
+      <span className="font-serif text-2xl text-white tracking-tight group-hover:text-[#C8A49F] transition-colors underline decoration-[#4D0E13] decoration-2 underline-offset-8">GlowSkin</span>
+      <Leaf size={20} className="text-[#C8A49F] group-hover:rotate-12 transition-transform" />
+    </div>
+  );
+}
+
+function MobileNavItem({ to, label, onClick, sub = false }: { to: string; label: string; onClick: () => void; sub?: boolean; key?: string }) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`${sub ? 'text-lg font-light text-[#C8A49F]/60' : 'text-3xl font-serif italic text-white'} hover:text-[#C8A49F] transition-colors tracking-wide`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+export function Footer() {
+  const [email, setEmail] = useState('');
+
+  return (
+    <footer className="bg-[#1A0809] border-t border-[#4D0E13] pt-24 pb-12 px-6 md:px-12 mt-32 overflow-hidden relative">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 mb-24">
+          {/* Brand Column */}
+          <div className="space-y-8">
+            <h3 className="font-serif text-3xl text-white">GlowSkin</h3>
+            <p className="text-[#C8A49F]/70 text-sm leading-relaxed max-w-[280px] font-sans">
+              Discover a curated collection that harmonizes science with the purest natural ingredients.
+            </p>
+            <div className="flex gap-6 pt-4">
+              <SocialIcon href="https://instagram.com/glowskin"><Instagram size={22} /></SocialIcon>
+              <SocialIcon href="https://pinterest.com/glowskin"><Pin size={22} /></SocialIcon>
+              <SocialIcon href="https://tiktok.com/@glowskin"><Music2 size={22} /></SocialIcon>
+              <SocialIcon href="https://youtube.com/glowskin"><Youtube size={22} /></SocialIcon>
+              <SocialIcon href="mailto:hello@glowskin.com"><Mail size={22} /></SocialIcon>
+            </div>
+          </div>
+
+          {/* Sourcing/Atelier Column */}
+          <FooterSection title="Atelier">
+            <li><Link to="/atelier/origin" className="footer-link">Our Origin</Link></li>
+            <li><Link to="/atelier/sourcing" className="footer-link">Sourcing</Link></li>
+            <li><Link to="/atelier/sustainability" className="footer-link">Sustainability</Link></li>
+            <li><Link to="/atelier/rituals" className="footer-link">Rituals Guide</Link></li>
+          </FooterSection>
+
+          {/* Concierge Column */}
+          <FooterSection title="Concierge">
+            <li><Link to="/concierge/shipping" className="footer-link">Shipping</Link></li>
+            <li><Link to="/concierge/contact" className="footer-link">Contact</Link></li>
+            <li><Link to="/concierge/faq" className="footer-link">FAQ</Link></li>
+            <li><Link to="/concierge/track" className="footer-link">Track Order</Link></li>
+          </FooterSection>
+
+          {/* Legal Column */}
+          <FooterSection title="Legal">
+            <li><Link to="/legal/terms" className="footer-link">Terms of Service</Link></li>
+            <li><Link to="/legal/refunds" className="footer-link">Refund Policy</Link></li>
+            <li><Link to="/legal/privacy" className="footer-link">Privacy Policy</Link></li>
+            <li className="pt-6 border-t border-[#4D0E13]/20 mt-6">
+              <Link to="/admin/login" className="text-[11px] uppercase tracking-widest text-white/40 hover:text-[#C8A49F] transition-all italic underline underline-offset-4 decoration-[#C8A49F]/30">Curator Portal</Link>
+            </li>
+          </FooterSection>
         </div>
-        
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 w-full md:w-auto">
-          <div>
-            <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Atelier</h3>
-            <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
-              <li><Link to="/about" className="hover:text-brand-surface transition-colors">Our Origin</Link></li>
-              <li><Link to="/sourcing" className="hover:text-brand-surface transition-colors">Sourcing</Link></li>
-              <li><Link to="/sustainability" className="hover:text-brand-surface transition-colors">Sustainability</Link></li>
-            </ul>
+
+        {/* Bottom Section */}
+        <div className="pt-12 border-t border-[#4D0E13]/20 flex flex-col lg:flex-row justify-between items-center gap-12 lg:gap-6">
+          <div className="flex flex-col gap-4 text-center lg:text-left">
+             <span className="text-[11px] text-[#C8A49F]/40 uppercase tracking-[0.2em]">© 2024 GlowSkin. All rights reserved.</span>
+             <div className="flex gap-4 text-[10px] text-[#C8A49F]/40 uppercase tracking-widest">
+               <Link to="/legal/privacy" className="hover:text-[#C8A49F] transition-all">Privacy Policy</Link>
+               <span>•</span>
+               <Link to="/legal/terms" className="hover:text-[#C8A49F] transition-all">Terms</Link>
+               <span>•</span>
+               <Link to="/legal/refunds" className="hover:text-[#C8A49F] transition-all">Refunds</Link>
+             </div>
           </div>
-          <div>
-            <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Concierge</h3>
-            <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
-              <li><Link to="/shipping" className="hover:text-brand-surface transition-colors">Shipping</Link></li>
-              <li><Link to="/contact" className="hover:text-brand-surface transition-colors">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-brand-surface transition-colors">Privacy</Link></li>
-            </ul>
+
+          <div className="w-full lg:w-auto">
+            <div className="p-8 bg-[#2C0F12] border border-[#4D0E13]/30 rounded-3xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#C8A49F]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-[#C8A49F]/10 transition-colors duration-1000"></div>
+              <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#C8A49F]/60 mb-4">Stay Connected</h4>
+              <p className="text-[11px] text-[#C8A49F]/40 mb-6 max-w-xs leading-relaxed">Receive seasonal insights & exclusive early access to new collections.</p>
+              <form 
+                onSubmit={(e) => { e.preventDefault(); setEmail(''); }}
+                className="flex gap-4 items-center border-b border-[#4D0E13] pb-2 group-focus-within:border-[#C8A49F] transition-all"
+              >
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your email" 
+                  className="bg-transparent border-none text-white text-xs placeholder:text-[#C8A49F]/20 outline-none w-full lg:w-48" 
+                  required
+                />
+                <button type="submit" className="w-10 h-10 bg-[#C8A49F] text-[#4D0E13] flex items-center justify-center rounded-xl hover:scale-105 transition-all shadow-[0_0_15px_rgba(200,164,159,0.3)]">
+                  <ArrowRight size={18} />
+                </button>
+              </form>
+            </div>
           </div>
-          <div>
-             <h3 className="text-xs font-semibold text-brand-surface uppercase mb-6 tracking-widest font-serif">Legal</h3>
-              <ul className="space-y-3 text-[11px] text-brand-emerald-light/60 uppercase tracking-wider font-sans font-medium">
-                <li><Link to="/terms" className="hover:text-brand-surface transition-colors">Terms of Service</Link></li>
-                <li><Link to="/refund" className="hover:text-brand-surface transition-colors">Refund Policy</Link></li>
-                <li className="pt-4 border-t border-brand-border/10">
-                  <Link 
-                    to="/admin"
-                    className="text-[9px] opacity-40 hover:opacity-100 hover:text-brand-emerald-light transition-all flex items-center gap-2 italic font-serif"
-                  >
-                    Curator Portal
-                  </Link>
-                </li>
-              </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-brand-border/10 flex flex-col md:flex-row justify-between items-center gap-6">
-        <span className="text-[9px] text-brand-emerald-light/40 uppercase tracking-[0.4em] font-sans">© 2024 GlowSkin</span>
-        <div className="flex gap-8 text-[9px] text-brand-emerald-light/40 uppercase tracking-[0.4em] font-sans">
-          <span>London</span>
-          <span>Paris</span>
-          <span>Kyoto</span>
         </div>
       </div>
     </footer>
+  );
+}
+
+function SocialIcon({ children, href }: { children: React.ReactNode, href: string }) {
+  return (
+    <a 
+      href={href} 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="text-[#C8A49F]/60 hover:text-[#C8A49F] hover:scale-115 transition-all duration-300"
+    >
+      {children}
+    </a>
+  );
+}
+
+function FooterSection({ title, children }: { title: string, children: React.ReactNode }) {
+  return (
+    <div className="space-y-8">
+      <h4 className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#C8A49F]/60 border-b border-[#4D0E13] pb-3 inline-block min-w-[80px]">
+        {title}
+      </h4>
+      <ul className="space-y-4">
+        {children}
+      </ul>
+      <style>{`
+        .footer-link {
+          font-family: 'Manrope', sans-serif;
+          font-size: 14px;
+          color: #FFFFFF;
+          text-decoration: none;
+          transition: all 300ms ease;
+          display: block;
+        }
+        .footer-link:hover {
+          color: #C8A49F;
+          padding-left: 4px;
+        }
+      `}</style>
+    </div>
   );
 }
