@@ -1,0 +1,268 @@
+import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { ChevronRight, ArrowLeft, ArrowRight, Sparkles, Search, SlidersHorizontal } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { PRODUCTS } from '../constants';
+
+export function CollectionView() {
+  const { category: categoryUrl } = useParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'default'>('default');
+  const itemsPerPage = 8;
+  
+  const storeStructure = [
+    {
+      title: 'Skincare',
+      categories: ['Cleansers', 'Moisturizers', 'Sunscreen', 'Serums', 'Exfoliants', 'Toners']
+    },
+    {
+      title: 'Makeup',
+      categories: ['Foundation', 'Concealer', 'Lip Products', 'Mascara', 'Eyeliner']
+    }
+  ];
+
+  // Map incoming URL slugs to display names and logic
+  const activeCategory = categoryUrl?.toLowerCase();
+
+  const filteredProducts = useMemo(() => {
+    let result = [...PRODUCTS];
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.benefits.some(b => b.toLowerCase().includes(query)) ||
+        p.subcategory.toLowerCase().includes(query)
+      );
+    }
+
+    // Category / Subcategory filter
+    if (activeCategory) {
+      result = result.filter(p => {
+        const pCat = p.category.toLowerCase();
+        const pSub = p.subcategory.toLowerCase();
+        
+        // If the URL matches a major category (skincare/makeup)
+        if (activeCategory === 'skincare' || activeCategory === 'makeup') {
+          return pCat === activeCategory;
+        }
+
+        // If the URL matches a specific subcategory
+        const normalizedSub = activeCategory.replace(/-/g, ' ');
+        return pSub === normalizedSub || pSub === activeCategory;
+      });
+    }
+
+    // Sorting
+    if (sortBy === 'price-asc') {
+      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
+    } else if (sortBy === 'price-desc') {
+      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
+    }
+
+    return result;
+  }, [searchQuery, sortBy, activeCategory]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, searchQuery, sortBy]);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-32">
+      {/* Header */}
+      <div className="mb-24">
+        <nav className="flex items-center space-x-3 text-slate-500 text-[10px] uppercase tracking-[0.3em] font-bold mb-8">
+          <Link to="/" className="hover:text-brand-emerald-light transition-colors">Home</Link>
+          <ChevronRight size={12} />
+          <Link to="/shop" className="hover:text-brand-emerald-light transition-colors">Shop</Link>
+          {categoryUrl && (
+            <>
+              <ChevronRight size={12} />
+              <span className="text-slate-100">{categoryUrl}</span>
+            </>
+          )}
+        </nav>
+        <h1 className="font-serif text-6xl md:text-8xl italic text-slate-50 border-b border-brand-border pb-12 mb-12 leading-tight">
+          {activeCategory ? activeCategory.replace(/-/g, ' ') : 'GlowSkin Selection'}
+        </h1>
+
+        <div className="flex flex-col md:flex-row justify-between items-end gap-12">
+          <p className="max-w-xl text-slate-400 text-xl leading-relaxed font-extralight italic">
+            Curated clinical and cosmetic solutions for radiant skin and effortless beauty. From foundational basics to targeted treatments.
+          </p>
+          
+          <div className="flex flex-col md:flex-row gap-6 w-full md:w-auto">
+            <div className="relative group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-brand-emerald-light transition-colors" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search Artifacts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-brand-charcoal border border-brand-border py-4 pl-14 pr-8 text-[11px] uppercase tracking-[0.2em] font-bold text-white focus:outline-none focus:border-brand-emerald-light w-full md:w-72 transition-all placeholder:text-slate-700"
+              />
+            </div>
+            
+            <div className="relative group">
+              <SlidersHorizontal className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 transition-colors" size={16} />
+              <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="bg-brand-charcoal border border-brand-border py-4 pl-14 pr-12 text-[11px] uppercase tracking-[0.2em] font-bold text-white focus:outline-none focus:border-brand-emerald-light w-full md:w-56 appearance-none transition-all cursor-pointer"
+              >
+                <option value="default">Default Relevance</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-20">
+        {/* Sidebar */}
+        <aside className="w-full lg:w-72 shrink-0 space-y-16">
+          <div>
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-300 mb-10 pb-4 border-b border-brand-border">Shop</h3>
+            <ul className="space-y-6 text-sm text-slate-500 uppercase tracking-widest mb-10">
+              <li className="text-[10px] font-bold">
+                <Link 
+                  to="/shop" 
+                  className={`flex items-center justify-between group hover:text-brand-emerald-light transition-colors ${!activeCategory ? 'text-brand-emerald-light' : ''}`}
+                >
+                  <span>All Products</span>
+                </Link>
+              </li>
+            </ul>
+
+            {storeStructure.map((group) => (
+              <div key={group.title} className="mb-10 last:mb-0">
+                <Link 
+                  to={`/shop/${group.title.toLowerCase()}`}
+                  className={`text-[10px] font-black uppercase tracking-[0.1em] mb-6 block transition-colors hover:text-brand-emerald-light ${activeCategory === group.title.toLowerCase() ? 'text-brand-emerald-light' : 'text-slate-100'}`}
+                >
+                  {group.title}
+                </Link>
+                <ul className="space-y-4 text-[10px] text-slate-500 uppercase tracking-widest font-bold pl-4">
+                  {group.categories.map((cat) => (
+                    <li key={cat}>
+                      <Link 
+                        to={`/shop/${cat.toLowerCase().replace(/\s/g, '-')}`}
+                        className={`flex items-center justify-between group hover:text-brand-emerald-light transition-colors ${activeCategory === cat.toLowerCase().replace(/\s/g, '-') ? 'text-brand-emerald-light' : ''}`}
+                      >
+                        <span>{cat}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-12">
+            <div className="p-10 bg-brand-charcoal border border-brand-border font-serif relative group overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-brand-emerald/30 group-hover:bg-brand-emerald transition-all"></div>
+              <p className="italic text-slate-400 text-base mb-8 leading-relaxed">"The water of life is not a substance, but a state of being."</p>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-brand-emerald-light font-sans font-bold flex items-center gap-2">
+                <Sparkles size={14} /> The Archives
+              </span>
+            </div>
+          </div>
+        </aside>
+
+        {/* Product Grid */}
+        <div className="flex-1">
+          {paginatedProducts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-24">
+              {paginatedProducts.map((product) => (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="group cursor-pointer"
+                >
+                  <Link to={`/product/${product.id}`}>
+                    <div className="relative aspect-[4/5] overflow-hidden bg-brand-charcoal mb-10 border border-brand-border">
+                      <img 
+                        src={product.image_url} 
+                        alt={product.name}
+                        className="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                      {product.limited && (
+                        <div className="absolute top-8 right-8">
+                           <span className="bg-brand-emerald text-white px-6 py-2 text-[10px] tracking-[0.3em] uppercase font-bold shadow-xl">Limited Selection</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-start">
+                      <div className="pr-4">
+                        <h2 className="font-sans text-[11px] uppercase tracking-[0.2em] mb-3 leading-relaxed group-hover:text-brand-emerald-light transition-colors text-slate-100 font-extrabold">{product.name}</h2>
+                        <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold">{product.subcategory}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-serif text-xl text-brand-emerald-light tracking-tight italic block mb-1">{product.price}</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-40 border border-brand-border/20 bg-brand-charcoal/30">
+               <span className="font-serif italic text-4xl text-slate-600 mb-6">No selections found</span>
+               <Link to="/shop" className="text-brand-emerald hover:text-white transition-colors uppercase tracking-[0.4em] text-[10px] font-bold">Clear All Filters</Link>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-32 flex items-center justify-center space-x-16 border-t border-brand-border pt-16">
+              <button 
+                onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className={`text-[10px] uppercase tracking-[0.4em] transition-colors flex items-center gap-3 font-bold ${currentPage === 1 ? 'text-slate-700 cursor-not-allowed' : 'text-slate-500 hover:text-brand-emerald-light'}`}
+              >
+                <ArrowLeft size={16} /> Previous
+              </button>
+              
+              <div className="flex items-center space-x-12 font-serif italic text-2xl text-slate-600">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <span 
+                    key={i} 
+                    onClick={() => goToPage(i + 1)}
+                    className={`cursor-pointer pb-2 border-b transition-all duration-300 ${currentPage === i+1 ? 'text-slate-50 border-brand-emerald' : 'border-transparent hover:text-slate-300'}`}
+                  >
+                    {(i + 1).toString().padStart(2, '0')}
+                  </span>
+                ))}
+              </div>
+
+              <button 
+                onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className={`text-[10px] uppercase tracking-[0.4em] transition-colors flex items-center gap-3 font-bold ${currentPage === totalPages ? 'text-slate-700 cursor-not-allowed' : 'text-slate-500 hover:text-brand-emerald-light'}`}
+              >
+                Next <ArrowRight size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

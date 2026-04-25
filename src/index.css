@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  
+  --color-brand-emerald: #064E3B;
+  --color-brand-emerald-light: #95D3BA;
+  --color-brand-black: #080A0C;
+  --color-brand-charcoal: #0D0F12;
+  --color-brand-surface: #16191D;
+  --color-brand-border: #1A1D21;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-black text-slate-300 font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, .font-serif {
+    @apply font-serif;
+  }
+}
