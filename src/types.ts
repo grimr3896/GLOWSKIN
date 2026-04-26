@@ -10,6 +10,7 @@ export interface Product {
   benefits: string[];
   ingredients: string;
   how_to_use: string[];
+  limited?: boolean;
 }
 
 export interface User {
@@ -32,9 +33,45 @@ export interface CartItem {
 
 export interface Order {
   id: string;
-  orderNumber: string;
-  date: string;
-  status: 'pending' | 'shipped' | 'delivered';
+  orderNumber: string;        // ORD-2024-00123
+  userId: string;
+  email: string;
+  createdAt: string;          // ISO timestamp
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  
+  // Shipping
+  shippingName: string;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingZip: string;
+  shippingMethod: 'standard' | 'express';
+  
+  // Payment
+  paymentMethod: 'card' | 'mpesa';
+  paymentStatus: 'pending' | 'succeeded' | 'failed';
+  stripePaymentIntentId?: string;
+  
+  // Items & Totals
+  items: OrderItem[];
+  subtotal: number;
+  shippingCost: number;
+  tax: number;
   total: number;
-  items: CartItem[];
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+}
+
+export interface OrderConfirmation {
+  order: Order;
+  message: string;
+  trackingUrl?: string;
 }

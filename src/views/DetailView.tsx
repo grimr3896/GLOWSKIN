@@ -1,14 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, ArrowRight, Leaf, RotateCcw, Heart, Share2, Plus, Minus, ChevronLeft } from 'lucide-react';
+import { Sparkles, ArrowRight, Leaf, RotateCcw, Heart, Share2, Plus, Minus, ChevronLeft, CheckCircle2, ShoppingBag } from 'lucide-react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../constants';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useError } from '../context/ErrorContext';
+import { ErrorCode } from '../types/errors';
 
 export function DetailView() {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
+  const { addError } = useError();
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'experience'>('description');
+  const [toast, setToast] = useState<string | null>(null);
 
   const currentIndex = PRODUCTS.findIndex(p => p.id === productId);
   const nextProduct = currentIndex !== -1 && currentIndex < PRODUCTS.length - 1 ? PRODUCTS[currentIndex + 1] : null;
@@ -18,6 +26,40 @@ export function DetailView() {
     PRODUCTS.find(p => p.id === productId), 
     [productId]
   );
+
+  useEffect(() => {
+    if (!product && productId) {
+      addError(ErrorCode.PRODUCT_NOT_FOUND);
+    }
+  }, [product, productId, addError]);
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      navigate('/auth/signup');
+      return;
+    }
+    if (product) {
+      addToCart(product, qty);
+      showToast(`✓ Added ${qty} to cart`);
+      setQty(1);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      navigate('/auth/signup');
+      return;
+    }
+    if (product) {
+      addToCart(product, qty);
+      navigate('/checkout');
+    }
+  };
 
   if (!product) {
     return (
@@ -188,18 +230,62 @@ export function DetailView() {
 
             {/* Action */}
             <div className="space-y-12">
-              <button 
-                onClick={() => navigate('/checkout', { state: { product, qty } })}
-                className="group relative w-full py-10 bg-brand-emerald text-brand-surface text-[11px] uppercase tracking-[0.4em] overflow-hidden transition-all active:scale-[0.99] flex items-center justify-center gap-6 font-black shadow-2xl rounded-full"
-              >
-                <span className="relative z-10">Purchase Now</span>
-                <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
-                <div className="absolute inset-0 bg-brand-emerald-light translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-              </button>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center bg-black border border-brand-emerald/30 rounded-xl overflow-hidden">
+                  <button 
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="px-5 py-3 text-brand-emerald-light hover:bg-white/5 transition-all font-bold"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="w-12 text-center text-brand-emerald-light font-serif italic text-xl">{qty}</span>
+                  <button 
+                    onClick={() => setQty(Math.min(10, qty + 1))}
+                    className="px-5 py-3 text-brand-emerald-light hover:bg-white/5 transition-all font-bold"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+                <div className="text-[9px] text-brand-emerald-light/40 uppercase tracking-widest font-black leading-tight">
+                  Maximum 10 units <br /> per procurement
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-6">
+                <button 
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-brand-surface border border-brand-emerald-light text-brand-emerald py-6 rounded-full text-[11px] uppercase tracking-[0.4em] font-black hover:bg-brand-emerald-light hover:text-brand-surface transition-all flex items-center justify-center gap-3 group shadow-xl"
+                >
+                  <ShoppingBag size={18} className="group-hover:-translate-y-0.5 transition-transform" />
+                  Add to Reserve
+                </button>
+                <button 
+                  onClick={handleBuyNow}
+                  className="flex-1 bg-brand-emerald text-brand-surface py-6 rounded-full text-[11px] uppercase tracking-[0.4em] font-black hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-3 group"
+                >
+                  Acquire Now
+                  <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] bg-brand-emerald text-brand-surface px-10 py-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-4 border border-white/10"
+          >
+            <CheckCircle2 size={18} />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Specs Summary */}
       <section className="py-32 border-t border-brand-border/10 bg-white/20">

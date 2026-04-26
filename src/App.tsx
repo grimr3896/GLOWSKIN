@@ -13,7 +13,13 @@ import { StaticPageView } from './views/StaticPageView';
 import { ContactView } from './views/ContactView';
 import { SignUpView } from './views/SignUpView';
 import { SignInView } from './views/SignInView';
+import { CartView } from './views/CartView';
+import { OrderConfirmationView } from './views/OrderConfirmationView';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { ErrorProvider } from './context/ErrorContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorToastContainer } from './components/ErrorToast';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -27,33 +33,37 @@ export default function App() {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <Router>
-      <AuthProvider>
-        <ScrollToTop />
-        <div className="min-h-screen bg-[#1A0809] text-slate-300 flex flex-col">
-          <Header onOpenSearch={() => setShowSearch(true)} />
-          
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<HomeView />} />
-              
-              {/* Authenticated Routes */}
-              <Route path="/auth/signup" element={<SignUpView />} />
-              <Route path="/auth/signin" element={<SignInView />} />
-              <Route path="/auth/forgot" element={<StaticPageView />} />
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <ErrorProvider>
+              <ScrollToTop />
+              <div className="min-h-screen bg-[#1A0809] text-slate-300 flex flex-col">
+                <Header onOpenSearch={() => setShowSearch(true)} />
+                
+                <main className="flex-1">
+                  <Routes>
+                    <Route path="/" element={<HomeView />} />
+                    
+                    {/* Authenticated Routes */}
+                    <Route path="/auth/signup" element={<SignUpView />} />
+                    <Route path="/auth/signin" element={<SignInView />} />
+                    <Route path="/auth/forgot" element={<StaticPageView />} />
 
-              {/* Shop & Collections */}
-            <Route path="/shop" element={<CollectionView />} />
-            <Route path="/shop/:category" element={<CollectionView />} />
-            <Route path="/collections" element={<CollectionView />} />
-            <Route path="/collections/:category" element={<CollectionView />} />
-            
-            <Route path="/product/:productId" element={<DetailView />} />
-            <Route path="/checkout" element={<CheckoutView />} />
-            <Route path="/cart" element={<CheckoutView />} />
-            <Route path="/profile" element={<ProfileView />} />
-            
-            {/* Atelier */}
+                    {/* Shop & Collections */}
+                  <Route path="/shop" element={<CollectionView />} />
+                  <Route path="/shop/:category" element={<CollectionView />} />
+                  <Route path="/collections" element={<CollectionView />} />
+                  <Route path="/collections/:category" element={<CollectionView />} />
+                  
+                  <Route path="/product/:productId" element={<DetailView />} />
+                  <Route path="/checkout" element={<CheckoutView />} />
+                  <Route path="/cart" element={<CartView />} />
+                  <Route path="/order-confirmation" element={<OrderConfirmationView />} />
+                  <Route path="/profile" element={<ProfileView />} />
+                  
+                  {/* Atelier */}
             <Route path="/atelier/origin" element={<StaticPageView />} />
             <Route path="/atelier/sourcing" element={<StaticPageView />} />
             <Route path="/atelier/sustainability" element={<StaticPageView />} />
@@ -82,6 +92,8 @@ export default function App() {
 
         <Footer />
 
+        <ErrorToastContainer />
+
         <AnimatePresence>
           {showSearch && (
             <SearchView 
@@ -90,8 +102,11 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
-     </AuthProvider>
-    </Router>
+     </ErrorProvider>
+    </CartProvider>
+   </AuthProvider>
+  </Router>
+ </ErrorBoundary>
   );
 }
 

@@ -5,39 +5,47 @@ import {
   ChevronRight, Truck, CreditCard, ShieldCheck, 
   CheckCircle2, ArrowRight, ArrowLeft 
 } from 'lucide-react';
-import { Product } from '../types';
+import { Product, Order } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { useError } from '../context/ErrorContext';
+import { ErrorCode } from '../types/errors';
+import { createOrder } from '../lib/orderService';
+import { sendOrderConfirmationEmail } from '../lib/emailService';
 
 type Step = 'shipping' | 'payment' | 'confirmation';
 
 export function CheckoutView() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const { cart, clearCart } = useCart();
+  const { addError } = useError();
+  const navigate = useNavigate();
+
   const [step, setStep] = useState<Step>('shipping');
   const [shippingMethod, setShippingMethod] = useState('std');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'mpesa'>('card');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [order, setOrder] = useState<Order | null>(null);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const purchaseData = location.state as { product: Product; qty: number } | null;
-
+  // If not authenticated, show gateway
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#1A0809] flex items-center justify-center pt-32 pb-20 px-6">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-lg w-full bg-[#0A0E27] border border-[#1DB679] p-12 rounded-3xl shadow-2xl text-center"
+          className="max-w-lg w-full bg-[#0A0E27] border border-brand-emerald p-12 rounded-3xl shadow-2xl text-center"
         >
-          <div className="w-16 h-16 bg-[#1DB679]/10 rounded-full flex items-center justify-center mx-auto mb-8">
-            <ShieldCheck size={32} className="text-[#1DB679]" />
+          <div className="w-16 h-16 bg-brand-emerald/10 rounded-full flex items-center justify-center mx-auto mb-8">
+            <ShieldCheck size={32} className="text-brand-emerald" />
           </div>
           <h2 className="font-serif text-3xl text-white italic mb-4">Collective Member Exclusive</h2>
-          <p className="text-[#B0B0B0] text-sm mb-10 leading-relaxed">To ensure the sanctity of our procurement process and provide precise logistical tracking, acquisition is currently reserved for our registered collective members.</p>
+          <p className="text-slate-400 text-sm mb-10 leading-relaxed font-bold uppercase tracking-widest">To ensure the sanctity of our procurement process and provide precise logistical tracking, acquisition is currently reserved for our registered collective members.</p>
           
           <div className="space-y-4">
             <Link 
               to="/auth/signup"
-              className="block w-full bg-[#1DB679] text-white py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_20px_rgba(29,182,121,0.3)] transition-all text-center"
+              className="block w-full bg-brand-emerald text-brand-surface py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all text-center"
             >
               Sign Up / Join Us
             </Link>
@@ -49,10 +57,25 @@ export function CheckoutView() {
             </Link>
           </div>
 
-          <p className="mt-8 text-[10px] text-[#B0B0B0] uppercase tracking-widest leading-loose">
-            By joining, you agree to our <Link to="/legal/terms" className="text-white underline cursor-pointer">Sanctuary Terms</Link> & <Link to="/legal/privacy" className="text-white underline cursor-pointer">Privacy Protocol</Link>.
+          <p className="mt-8 text-[10px] text-slate-500 uppercase tracking-widest leading-loose font-black">
+            By joining, you agree to our Archive Terms & Privacy Protocol.
           </p>
         </motion.div>
+      </div>
+    );
+  }
+
+  // If cart is empty, show empty state
+  if (cart.items.length === 0 && step !== 'confirmation') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center p-6 bg-[#1A0809]">
+        <h1 className="font-serif text-4xl text-slate-50 mb-8 italic uppercase tracking-tighter">Procurement Empty</h1>
+        <Link 
+          to="/collections" 
+          className="text-brand-emerald-light uppercase tracking-[0.3em] text-[10px] font-bold border-b border-brand-emerald pb-1 hover:text-white transition-colors"
+        >
+          Return to Archive
+        </Link>
       </div>
     );
   }
@@ -102,41 +125,90 @@ export function CheckoutView() {
     if (validateShipping()) {
       setErrors({});
       setStep('payment');
+    } else {
+      addError(ErrorCode.INVALID_SHIPPING_DETAILS);
     }
   };
 
-  const handlePaymentAdvance = () => {
+  const handlePaymentSuccess = async (stripePaymentIntentId: string) => {
+    if (!user) {
+      addError(ErrorCode.AUTH_LOGIN_FAILED);
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // 1. Create order in database
+      const newOrder = await createOrder({
+        userId: user.id,
+        email: user.email,
+        cartItems: cart.items,
+        shippingDetails: {
+          name: shippingDetails.name,
+          email: shippingDetails.email,
+          address: shippingDetails.address,
+          city: shippingDetails.city,
+          state: '', // Not collected in current form
+          zip: shippingDetails.zip,
+        },
+        shippingMethod: shippingMethod === 'std' ? 'standard' : 'express',
+        paymentMethod: paymentMethod,
+        stripePaymentIntentId,
+      });
+
+      setOrder(newOrder);
+
+      // 2. Send confirmation email
+      try {
+        await sendOrderConfirmationEmail({
+          email: user.email,
+          orderNumber: newOrder.orderNumber,
+          order: newOrder,
+        });
+      } catch (emailError) {
+        console.error('Email send failed:', emailError);
+      }
+
+      // 3. Clear cart
+      clearCart();
+
+      // 4. Show confirmation page
+      setStep('confirmation');
+      
+      // Auto-redirect after 5 seconds to profile with order number
+      const timer = setTimeout(() => {
+        navigate(`/profile?orderNumber=${newOrder.orderNumber}`);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error('Post-payment error:', error);
+      addError(ErrorCode.CHECKOUT_FAILED);
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentAdvance = async () => {
     if (validatePayment()) {
       setErrors({});
-      setStep('confirmation');
+      setIsProcessing(true);
+      
+      // Simulate alchemy/processing
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await handlePaymentSuccess(`pi_${Math.random().toString(36).substring(7)}`);
+      } catch (error) {
+        addError(ErrorCode.PAYMENT_FAILED);
+        setIsProcessing(false);
+      }
+    } else {
+      addError(ErrorCode.INVALID_PAYMENT_DETAILS);
     }
   };
 
-  const subtotal = useMemo(() => {
-    if (!purchaseData) return 0;
-    const priceStr = purchaseData.product.price.replace(/[^0-9.]/g, '');
-    return parseFloat(priceStr) * purchaseData.qty;
-  }, [purchaseData]);
-
   const shippingPrice = shippingMethod === 'exp' ? 24 : 0;
-  const total = subtotal + shippingPrice;
-
-  // If no product is being purchased directly, and they landed here somehow, redirect or show error
-  if (!purchaseData) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center p-6">
-        <h1 className="font-serif text-4xl text-slate-50 mb-8 italic">No Acquisition Initiated</h1>
-        <button 
-          onClick={() => navigate('/shop')}
-          className="text-brand-emerald-light uppercase tracking-[0.2em] text-xs font-bold border-b border-brand-emerald pb-1"
-        >
-          Return to Collection
-        </button>
-      </div>
-    );
-  }
-
-  const { product, qty } = purchaseData;
+  const total = cart.totalPrice + shippingPrice;
 
   return (
     <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-32 min-h-screen">
@@ -242,7 +314,7 @@ export function CheckoutView() {
                        <h3 className="text-[10px] uppercase tracking-widest text-slate-300 font-bold mb-8">Preferred Courier</h3>
                        <div className="space-y-4">
                          {[
-                           { id: 'std', label: 'Ethereal Standard', desc: '4-17 Solar Days', price: 'Free', priceVal: 0 },
+                           { id: 'std', label: 'Ethereal Standard', desc: '1-5 Solar Days', price: 'Free', priceVal: 0 },
                            { id: 'exp', label: 'Celestial Express', desc: '1-2 Solar Days', price: '€24.00', priceVal: 24 },
                          ].map(opt => (
                            <div 
@@ -384,9 +456,17 @@ export function CheckoutView() {
                           </button>
                           <button 
                             onClick={handlePaymentAdvance}
-                            className="px-12 py-5 bg-brand-emerald text-white text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-emerald-800 transition-all flex items-center gap-4"
+                            disabled={isProcessing}
+                            className={`px-12 py-5 bg-brand-emerald text-white text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-emerald-800 transition-all flex items-center gap-4 ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            {paymentMethod === 'card' ? 'Sanction Payment' : 'Initiate STK Push'}
+                            {isProcessing ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                Transmitting...
+                              </>
+                            ) : (
+                              paymentMethod === 'card' ? 'Sanction Payment' : 'Initiate STK Push'
+                            )}
                           </button>
                         </div>
                       </div>
@@ -409,11 +489,11 @@ export function CheckoutView() {
                       <div className="space-y-4">
                         <div className="flex justify-between border-b border-brand-border pb-3">
                           <span className="text-[11px] uppercase tracking-widest text-slate-300">Reference No.</span>
-                          <span className="font-serif text-slate-100">AB-2024-9981</span>
+                          <span className="font-serif text-slate-100">{order?.orderNumber || 'AB-2024-9981'}</span>
                         </div>
                         <div className="flex justify-between border-b border-brand-border pb-3">
                           <span className="text-[11px] uppercase tracking-widest text-slate-300">Arrival Est.</span>
-                          <span className="font-serif text-slate-100">3-5 Solar Days</span>
+                          <span className="font-serif text-slate-100">{shippingMethod === 'exp' ? '1-2' : '1-5'} Solar Days</span>
                         </div>
                       </div>
                     </div>
@@ -436,35 +516,35 @@ export function CheckoutView() {
               <div className="sticky top-32">
                 <div className="bg-brand-charcoal border border-brand-border p-10">
                   <h3 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-8">Acquisition Manifest</h3>
-                  <div className="flex gap-6 mb-8 pb-8 border-b border-brand-border">
-                    <div className="w-20 h-24 bg-brand-black border border-brand-border overflow-hidden shrink-0">
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-contain grayscale opacity-60" referrerPolicy="no-referrer" />
-                    </div>
-                    <div className="flex flex-col justify-between py-1">
-                      <div>
-                        <h4 className="font-sans text-[10px] uppercase tracking-[0.2em] font-extrabold text-slate-100 leading-tight">{product.name}</h4>
-                        <p className="text-[9px] uppercase tracking-widest text-slate-500 font-bold mt-2">{product.subcategory}</p>
+                  <div className="space-y-6 mb-8 pb-8 border-b border-brand-border max-h-[400px] overflow-auto">
+                    {cart.items.map((item) => (
+                      <div key={item.productId} className="flex gap-4">
+                        <div className="w-16 h-20 bg-brand-black border border-brand-border overflow-hidden shrink-0">
+                          <img src={item.image_url} alt={item.name} className="w-full h-full object-contain grayscale opacity-60" referrerPolicy="no-referrer" />
+                        </div>
+                        <div className="flex flex-col justify-between py-1 min-w-0">
+                          <div>
+                            <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-extrabold text-slate-100 leading-tight truncate">{item.name}</h4>
+                            <p className="text-[8px] uppercase tracking-widest text-slate-500 font-bold mt-1">Qty: {item.quantity}</p>
+                          </div>
+                          <span className="font-sans text-[10px] text-brand-emerald-light tracking-[0.2em] uppercase font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-end">
-                        <span className="font-sans text-[10px] text-brand-emerald-light tracking-[0.2em] uppercase font-bold">{product.price}</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   <div className="space-y-4 pt-4">
                     <div className="flex justify-between text-[11px] uppercase tracking-widest">
                       <span className="text-slate-500">Subtotal</span>
-                      <span className="text-slate-200">€{subtotal.toFixed(2)}</span>
+                      <span className="text-slate-200">${cart.totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-[11px] uppercase tracking-widest">
                       <span className="text-slate-500">Shipping</span>
-                      <span className="text-slate-200 italic font-bold">
-                        {shippingPrice === 0 ? 'Included' : `€${shippingPrice.toFixed(2)}`}
-                      </span>
+                      <span className="text-slate-200">${shippingPrice.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-[13px] uppercase tracking-widest font-bold pt-6 border-t border-brand-border mt-6">
-                      <span className="text-white">Total</span>
-                      <span className="text-brand-emerald-light">€{total.toFixed(2)}</span>
+                    <div className="flex justify-between text-base uppercase tracking-widest font-bold pt-6 border-t border-brand-border mt-6">
+                      <span className="text-white">Total Acquisition</span>
+                      <span className="text-brand-emerald-light">${total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

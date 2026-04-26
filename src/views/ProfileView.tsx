@@ -4,6 +4,7 @@ import { X, CheckCircle2, User as UserIcon, AlertCircle, ChevronRight, Package }
 import { User, Order } from '../types';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getOrders } from '../lib/orderService';
 
 export function ProfileView() {
   const navigate = useNavigate();
@@ -20,10 +21,26 @@ export function ProfileView() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      // Redirect or show guest view is handled in the return
+    if (isAuthenticated && user) {
+      const allOrders = getOrders();
+      // Filter orders for the current user
+      const userOrders = allOrders.filter(o => o.userId === user.id);
+      setOrders(userOrders);
+
+      // Check for orderNumber in URL
+      const params = new URLSearchParams(window.location.search);
+      const orderNum = params.get('orderNumber');
+      if (orderNum) {
+        const orderToShow = userOrders.find(o => o.orderNumber === orderNum);
+        if (orderToShow) {
+          setSelectedOrder(orderToShow);
+          setActiveModal('order');
+          // Clear param to avoid re-opening on every render
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   const handleSignOut = () => {
     logout();
@@ -149,7 +166,7 @@ export function ProfileView() {
                   >
                     <div className="flex flex-col gap-1 mb-2 md:mb-0">
                       <span className="text-white text-sm font-sans font-bold tracking-tight">{order.orderNumber}</span>
-                      <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em]">{order.date}</span>
+                      <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em]">{new Date(order.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-10 w-full md:w-auto justify-between">
                       <span className="text-white text-sm font-sans font-bold">${order.total.toFixed(2)}</span>
@@ -281,7 +298,7 @@ export function ProfileView() {
                    <div className="grid grid-cols-2 gap-8 mb-10 text-sm">
                       <div>
                         <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em] font-black block mb-2">Manifest Date</span>
-                        <span className="text-white font-bold">{selectedOrder.date}</span>
+                        <span className="text-white font-bold">{new Date(selectedOrder.createdAt).toLocaleDateString()}</span>
                       </div>
                       <div>
                         <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em] font-black block mb-2">Logistical Status</span>
@@ -291,25 +308,29 @@ export function ProfileView() {
                       </div>
                    </div>
 
-                   <div className="space-y-4 max-h-56 overflow-y-auto mb-10 border-y border-white/5 py-6 pr-4 custom-scrollbar">
+                    <div className="space-y-4 max-h-56 overflow-y-auto mb-10 border-y border-white/5 py-6 pr-4 custom-scrollbar">
                       <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Acquired Items</p>
                       {selectedOrder.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center text-sm group">
+                        <button 
+                          key={idx} 
+                          onClick={() => { setActiveModal(null); navigate(`/product/${item.productId}`); }}
+                          className="w-full flex justify-between items-center text-sm group text-left hover:bg-white/5 p-2 rounded-lg transition-all"
+                        >
                           <div className="flex flex-col">
-                            <span className="text-white font-medium group-hover:text-[#1DB679] transition-colors tracking-tight">Item #{idx + 1}</span>
+                            <span className="text-white font-medium group-hover:text-[#1DB679] transition-colors tracking-tight">{item.productName}</span>
                             <span className="text-[10px] text-[#B0B0B0] uppercase tracking-widest">Qty: {item.quantity}</span>
                           </div>
                           <span className="text-white font-bold tracking-tight">${(item.price * item.quantity).toFixed(2)}</span>
-                        </div>
+                        </button>
                       ))}
-                   </div>
+                    </div>
 
                    <div className="mb-10">
                       <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Destination Ritual</p>
-                      <address className="not-italic text-white text-sm leading-relaxed tracking-wide opacity-80">
-                        123 Botanical Avenue<br />
-                        Conservatory District<br />
-                        London, UK 10001
+                      <address className="not-italic text-white text-sm leading-relaxed tracking-wide opacity-80 font-serif italic">
+                        {selectedOrder.shippingName}<br />
+                        {selectedOrder.shippingAddress}<br />
+                        {selectedOrder.shippingCity}, {selectedOrder.shippingZip}
                       </address>
                    </div>
 

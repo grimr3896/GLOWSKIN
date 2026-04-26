@@ -3,16 +3,18 @@ import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useError } from '../context/ErrorContext';
+import { ErrorCode } from '../types/errors';
 
 export function SignInView() {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
+  const { addError } = useError();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -23,13 +25,12 @@ export function SignInView() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
 
     // Mock login process
     setTimeout(() => {
       // Allow any login for demo, except mock failure
       if (email === 'fail@example.com') {
-        setError('Invalid email or password. Please try again.');
+        addError(ErrorCode.AUTH_LOGIN_FAILED);
         setIsLoading(false);
       } else {
         const name = email.split('@')[0];
@@ -54,17 +55,6 @@ export function SignInView() {
             <h2 className="font-serif text-2xl text-white italic mb-2">Welcome Back</h2>
             <p className="font-sans text-[11px] text-[#B0B0B0] uppercase tracking-[0.2em] font-bold">Sign in to your account</p>
           </div>
-
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-8 p-4 bg-[#FF6B6B]/10 border border-[#FF6B6B]/40 rounded-xl text-[#FF6B6B] text-xs font-bold flex items-center gap-3"
-            >
-              <div className="w-1.5 h-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
-              {error}
-            </motion.div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">

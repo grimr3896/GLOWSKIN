@@ -3,6 +3,7 @@ import { Menu, User, Search, X, ChevronRight, Leaf, ShoppingBag, Instagram, Yout
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export function Header({ onOpenSearch }: HeaderProps) {
   const { user, logout, isAuthenticated } = useAuth();
+  const { cart } = useCart();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -179,6 +181,21 @@ export function Header({ onOpenSearch }: HeaderProps) {
               <User size={20} />
             </Link>
           </div>
+          <Link to="/cart" className="relative group">
+            <ShoppingBag size={20} className="text-[#C8A49F]/60 group-hover:text-[#C8A49F] transition-colors" />
+            <AnimatePresence>
+              {cart.totalItems > 0 && (
+                <motion.span 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  className="absolute -top-2 -right-2 bg-[#00E5FF] text-black text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(0,229,255,0.4)]"
+                >
+                  {cart.totalItems}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Link>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden text-[#C8A49F]/60 hover:text-[#C8A49F] transition-colors"
@@ -273,7 +290,6 @@ export function Footer() {
             <li><Link to="/atelier/origin" className="footer-link">Our Origin</Link></li>
             <li><Link to="/atelier/sourcing" className="footer-link">Sourcing</Link></li>
             <li><Link to="/atelier/sustainability" className="footer-link">Sustainability</Link></li>
-            <li><Link to="/atelier/rituals" className="footer-link">Rituals Guide</Link></li>
           </FooterSection>
 
           {/* Concierge Column */}

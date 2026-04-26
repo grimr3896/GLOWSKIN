@@ -3,10 +3,13 @@ import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useError } from '../context/ErrorContext';
+import { ErrorCode } from '../types/errors';
 
 export function SignUpView() {
   const navigate = useNavigate();
   const { signup, isAuthenticated } = useAuth();
+  const { addError } = useError();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -80,10 +83,18 @@ export function SignUpView() {
     setIsLoading(true);
     // Mock signup process
     setTimeout(() => {
-      const name = email.split('@')[0];
-      signup(email, name.charAt(0).toUpperCase() + name.slice(1));
-      setIsLoading(false);
-      navigate('/profile');
+      try {
+        if (email === 'taken@example.com') {
+          throw new Error('Email already exists');
+        }
+        const name = email.split('@')[0];
+        signup(email, name.charAt(0).toUpperCase() + name.slice(1));
+        setIsLoading(false);
+        navigate('/profile');
+      } catch (err) {
+        addError(ErrorCode.EMAIL_ALREADY_EXISTS);
+        setIsLoading(false);
+      }
     }, 1500);
   };
 
