@@ -67,7 +67,7 @@ export default function App() {
             <Route path="/atelier/origin" element={<StaticPageView />} />
             <Route path="/atelier/sourcing" element={<StaticPageView />} />
             <Route path="/atelier/sustainability" element={<StaticPageView />} />
-            <Route path="/atelier/rituals" element={<StaticPageView />} />
+            <Route path="/atelier/routines" element={<StaticPageView />} />
 
             {/* Concierge */}
             <Route path="/concierge/shipping" element={<StaticPageView />} />

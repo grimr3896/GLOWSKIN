@@ -62,7 +62,7 @@ export function Header({ onOpenSearch }: HeaderProps) {
         { name: 'Our Origin', path: '/atelier/origin' },
         { name: 'Sourcing', path: '/atelier/sourcing' },
         { name: 'Sustainability', path: '/atelier/sustainability' },
-        { name: 'Rituals Guide', path: '/atelier/rituals' },
+        { name: 'Routines Guide', path: '/atelier/routines' },
       ]
     },
     { 

@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ArrowRight, Leaf, RotateCcw, Heart, Share2, Plus, Minus, ChevronLeft, CheckCircle2, ShoppingBag } from 'lucide-react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { dbService } from '../services/dbService';
+import { Product } from '../types';
 import { PRODUCTS } from '../constants';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -15,28 +17,29 @@ export function DetailView() {
   const { addToCart } = useCart();
   const { addError } = useError();
   const [qty, setQty] = useState(1);
-  const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'experience'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'experience' | 'reviews'>('description');
   const [toast, setToast] = useState<string | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const currentIndex = PRODUCTS.findIndex(p => p.id === productId);
   const nextProduct = currentIndex !== -1 && currentIndex < PRODUCTS.length - 1 ? PRODUCTS[currentIndex + 1] : null;
   const prevProduct = currentIndex > 0 ? PRODUCTS[currentIndex - 1] : null;
 
-  const product = useMemo(() => 
-    PRODUCTS.find(p => p.id === productId), 
-    [productId]
-  );
-
   useEffect(() => {
-    if (!product && productId) {
-      addError(ErrorCode.PRODUCT_NOT_FOUND);
+    async function loadProduct() {
+      if (!productId) return;
+      setLoading(true);
+      const data = await dbService.getProductById(productId);
+      setProduct(data);
+      setLoading(false);
+      
+      if (!data) {
+        addError(ErrorCode.PRODUCT_NOT_FOUND);
+      }
     }
-  }, [product, productId, addError]);
-
-  const showToast = (message: string) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
+    loadProduct();
+  }, [productId, addError]);
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -49,6 +52,21 @@ export function DetailView() {
       setQty(1);
     }
   };
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white font-serif italic text-2xl animate-pulse">Loading formulation...</div>
+      </div>
+    );
+  }
+
+  if (!product) return null;
 
   const handleBuyNow = () => {
     if (!isAuthenticated) {
@@ -76,7 +94,13 @@ export function DetailView() {
     { id: 'description', label: 'The Essence' },
     { id: 'ingredients', label: 'Composition' },
     { id: 'experience', label: 'The Experience' },
+    { id: 'reviews', label: 'Manifestations' },
   ];
+
+  const averageRating = useMemo(() => {
+    if (!product.reviews || product.reviews.length === 0) return 4.7; // Default for artifacts
+    return product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / product.reviews.length;
+  }, [product.reviews]);
 
   return (
     <div className="w-full">
@@ -150,6 +174,24 @@ export function DetailView() {
             
             <div className="flex items-baseline gap-8 mb-16 border-b border-brand-border/20 pb-10">
               <span className="text-3xl font-sans text-brand-emerald tracking-[0.1em] uppercase font-light">{product.price}</span>
+              <div className="flex items-center gap-3 border-l border-brand-border/20 pl-8">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <motion.div
+                      key={star}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: star * 0.1 }}
+                    >
+                      <Sparkles 
+                        size={12} 
+                        className={star <= Math.round(averageRating) ? "text-brand-emerald-light fill-brand-emerald-light" : "text-brand-emerald/10"} 
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-emerald-light">{averageRating.toFixed(1)} / 5</span>
+              </div>
             </div>
 
             {/* Tabbed Navigation */}
@@ -221,6 +263,40 @@ export function DetailView() {
                             <p className="text-sm text-brand-emerald/70 leading-relaxed font-light italic border-l border-brand-border/30 pl-8">{text}</p>
                           </div>
                         ))}
+                      </div>
+                    )}
+
+                    {activeTab === 'reviews' && (
+                      <div className="space-y-12">
+                        {(!product.reviews || product.reviews.length === 0) ? (
+                          <p className="text-sm text-brand-emerald/50 italic py-10 text-center border border-dashed border-brand-border/20 rounded-3xl">
+                            No shared manifestations yet for this artifact.
+                          </p>
+                        ) : (
+                          product.reviews.map((review, i) => (
+                            <div key={review.id} className="group">
+                              <div className="flex justify-between items-start mb-4">
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-emerald-light">{review.user_name}</span>
+                                  <span className="text-[9px] text-brand-emerald/40 uppercase tracking-widest">{new Date(review.date).toLocaleDateString()}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Sparkles 
+                                      key={star} 
+                                      size={8} 
+                                      className={star <= review.rating ? "text-brand-emerald-light fill-brand-emerald-light" : "text-brand-emerald/10"} 
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-sm text-brand-emerald/80 leading-relaxed font-light italic pl-6 border-l border-brand-emerald-light/20 group-hover:border-brand-emerald-light transition-all duration-500">
+                                "{review.comment}"
+                                <CheckCircle2 size={12} className="inline ml-2 text-brand-emerald-light/60" />
+                              </p>
+                            </div>
+                          ))
+                        )}
                       </div>
                     )}
                   </motion.div>

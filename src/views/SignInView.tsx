@@ -63,7 +63,7 @@ export function SignInView() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="rituals@glowskin.com"
+                placeholder="routines@glowskin.com"
                 className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-4 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.2)] outline-none transition-all placeholder:text-white/10"
                 required
               />

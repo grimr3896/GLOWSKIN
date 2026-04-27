@@ -132,8 +132,8 @@ const CONTENT: Record<string, { title: string; subtitle: string; content: React.
         {[
           { q: 'How do I know my skin type?', a: 'We recommend starting with our digital skin analysis or consulting with a Dermal Specialist via our live chat.' },
           { q: 'Which products are right for me?', a: 'Browse our collections categorized by skin concern: Hydration, Anti-Aging, Clarity, or Sensitivity.' },
-          { q: 'How long until I see results?', a: 'While immediate hydration is visible, structural skin changes typically take 28-60 days with consistent ritual use.' },
-          { q: 'Can I use multiple products together?', a: 'Yes, our formulations are designed to be layered. We provide ritual guides for optimal sequencing.' }
+          { q: 'How long until I see results?', a: 'While immediate hydration is visible, structural skin changes typically take 28-60 days with consistent routine use.' },
+          { q: 'Can I use multiple products together?', a: 'Yes, our formulations are designed to be layered. We provide routine guides for optimal sequencing.' }
         ].map((item, i) => (
           <div key={i} className="space-y-4 pb-8 border-b border-[#4D0E13]/10">
             <h4 className="text-lg font-serif italic text-white">{item.q}</h4>

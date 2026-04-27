@@ -2,15 +2,28 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, ArrowLeft, ArrowRight, Sparkles, Search, SlidersHorizontal } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { PRODUCTS } from '../constants';
+import { dbService } from '../services/dbService';
+import { Product } from '../types';
 
 export function CollectionView() {
   const { category: categoryUrl } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'default'>('default');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 8;
   
+  useEffect(() => {
+    async function loadProducts() {
+      setLoading(true);
+      const data = await dbService.getProducts();
+      setProducts(data);
+      setLoading(false);
+    }
+    loadProducts();
+  }, []);
+
   const storeStructure = [
     {
       title: 'Skincare',
@@ -26,7 +39,7 @@ export function CollectionView() {
   const activeCategory = categoryUrl?.toLowerCase();
 
   const filteredProducts = useMemo(() => {
-    let result = [...PRODUCTS];
+    let result = [...products];
 
     // Search filter
     if (searchQuery) {

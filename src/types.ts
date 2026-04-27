@@ -1,5 +1,13 @@
 export type Page = 'home' | 'collection' | 'detail' | 'cart' | 'checkout' | 'profile' | 'admin' | 'search';
 
+export interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  user_name: string;
+  date: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -11,6 +19,7 @@ export interface Product {
   ingredients: string;
   how_to_use: string[];
   limited?: boolean;
+  reviews?: Review[];
 }
 
 export interface User {

@@ -182,7 +182,7 @@ export function HomeView() {
               </span>
               <h2 className="font-serif text-6xl md:text-8xl text-brand-emerald mb-12 leading-tight italic">Rooted in <br/><span className="italic font-light">Heritage</span></h2>
               <p className="text-xl text-brand-emerald/80 mb-16 leading-relaxed font-light italic">
-                Our curated collection features the finest artisanal and clinical formulations. From the world's leading labs to your daily ritual, we bridge the gap between tradition and innovation.
+                Our curated collection features the finest artisanal and clinical formulations. From the world's leading labs to your daily routine, we bridge the gap between tradition and innovation.
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-12 sm:gap-16">
                 <Link to="/shop" className="flex items-center gap-6 group">
@@ -232,7 +232,7 @@ export function HomeView() {
             <div className="bg-brand-emerald w-full aspect-[3/4] flex flex-col justify-center items-center p-12 rounded-3xl border border-brand-emerald-light/20 text-center group transition-all hover:bg-brand-emerald-light/10">
               <Sparkles className="text-brand-surface mb-8 transition-transform group-hover:scale-110" size={48} />
               <h4 className="font-serif text-2xl text-brand-surface uppercase mb-4 tracking-widest italic">Skin Analysis</h4>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-brand-emerald-light leading-relaxed font-bold">Personalized rituals for your unique profile.</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-brand-emerald-light leading-relaxed font-bold">Personalized routines for your unique profile.</p>
             </div>
           </div>
         </div>

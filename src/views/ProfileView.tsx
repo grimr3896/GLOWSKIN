@@ -284,7 +284,7 @@ export function ProfileView() {
                     <AlertCircle size={40} className="text-[#FF6B6B]" />
                   </div>
                   <h2 className="font-serif text-3xl text-white italic mb-4 tracking-tight">End Session?</h2>
-                  <p className="text-[#B0B0B0] text-sm mb-12 leading-relaxed">Are you sure you want to end your current GlowSkin ritual session?</p>
+                  <p className="text-[#B0B0B0] text-sm mb-12 leading-relaxed">Are you sure you want to end your current GlowSkin routine session?</p>
                   <div className="flex gap-4">
                     <button onClick={() => setActiveModal(null)} className="flex-1 border border-white/10 text-[#B0B0B0] py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:text-white transition-all">Cancel</button>
                     <button onClick={handleSignOut} className="flex-1 bg-[#FF6B6B] text-white py-4 rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_20px_rgba(255,107,107,0.4)] transition-all">End Session</button>
@@ -326,7 +326,7 @@ export function ProfileView() {
                     </div>
 
                    <div className="mb-10">
-                      <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Destination Ritual</p>
+                      <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Destination Routine</p>
                       <address className="not-italic text-white text-sm leading-relaxed tracking-wide opacity-80 font-serif italic">
                         {selectedOrder.shippingName}<br />
                         {selectedOrder.shippingAddress}<br />

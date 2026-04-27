@@ -22,7 +22,7 @@ export function CartView() {
           </div>
           <h1 className="font-serif text-4xl text-white italic mb-4">Cart Empty</h1>
           <p className="text-[#B0B0B0] text-sm mb-10 leading-relaxed font-sans">
-            Your procurement cart awaits. Explore our collection to find your next daily ritual.
+            Your procurement cart awaits. Explore our collection to find your next daily routine.
           </p>
           <Link
             to="/collections"
