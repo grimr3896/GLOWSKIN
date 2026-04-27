@@ -26,19 +26,28 @@ export function SignInView() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock login process
-    setTimeout(() => {
-      // Allow any login for demo, except mock failure
-      if (email === 'fail@example.com') {
-        addError(ErrorCode.AUTH_LOGIN_FAILED);
+    try {
+      const { error } = await login(email, password);
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          addError(ErrorCode.AUTH_LOGIN_FAILED);
+        } else {
+          addError(ErrorCode.AUTH_LOGIN_FAILED, error.message);
+        }
         setIsLoading(false);
-      } else {
-        const name = email.split('@')[0];
-        login(email, name.charAt(0).toUpperCase() + name.slice(1));
-        setIsLoading(false);
-        navigate('/profile');
+        return;
       }
-    }, 1500);
+
+      // Success
+      navigate('/profile');
+    } catch (error) {
+      addError(
+        ErrorCode.AUTH_LOGIN_FAILED,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      setIsLoading(false);
+    }
   };
 
   return (

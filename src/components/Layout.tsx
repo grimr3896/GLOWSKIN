@@ -81,8 +81,8 @@ export function Header({ onOpenSearch }: HeaderProps) {
     setIsMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 

@@ -29,62 +29,6 @@ const categoryData = [
 const COLORS = ['#C8A49F', '#4D0E13', '#2C0F12', '#1A0809'];
 
 export function AdminView() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#1A0809] flex items-center justify-center px-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md bg-[#2C0F12] border border-[#4D0E13]/30 p-12 rounded-[2rem] shadow-2xl relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#C8A49F]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          
-          <h1 className="font-serif text-4xl text-white italic mb-4">Curator Portal</h1>
-          <p className="text-sm text-[#C8A49F]/60 mb-10 leading-relaxed">This is the private administrative dashboard for GlowSkin curators and staff.</p>
-          
-          <form 
-            onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }}
-            className="space-y-6"
-          >
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-[#C8A49F]/40 font-bold">Email</label>
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent border-b border-[#4D0E13] py-3 text-white outline-none focus:border-[#C8A49F] transition-colors" 
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-widest text-[#C8A49F]/40 font-bold">Password</label>
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-transparent border-b border-[#4D0E13] py-3 text-white outline-none focus:border-[#C8A49F] transition-colors" 
-                required
-              />
-            </div>
-            <button 
-              type="submit"
-              className="w-full py-4 bg-[#C8A49F] text-[#4D0E13] text-[10px] uppercase tracking-[0.2em] font-bold hover:scale-[1.02] active:scale-[0.98] transition-all rounded-full shadow-lg shadow-[#C8A49F]/20"
-            >
-              Sign In
-            </button>
-            <button type="button" className="w-full text-[10px] text-[#C8A49F]/40 uppercase tracking-widest hover:text-white transition-colors pt-4">
-              Forgot password?
-            </button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-40 min-h-screen bg-[#1A0809]">
       <div className="flex flex-col md:flex-row justify-between items-start mb-12">

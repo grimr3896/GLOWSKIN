@@ -20,6 +20,7 @@ import { CartProvider } from './context/CartContext';
 import { ErrorProvider } from './context/ErrorContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorToastContainer } from './components/ErrorToast';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -57,36 +58,71 @@ export default function App() {
                   <Route path="/collections" element={<CollectionView />} />
                   <Route path="/collections/:category" element={<CollectionView />} />
                   
-                  <Route path="/product/:productId" element={<DetailView />} />
-                  <Route path="/checkout" element={<CheckoutView />} />
-                  <Route path="/cart" element={<CartView />} />
-                  <Route path="/order-confirmation" element={<OrderConfirmationView />} />
-                  <Route path="/profile" element={<ProfileView />} />
-                  
-                  {/* Atelier */}
-            <Route path="/atelier/origin" element={<StaticPageView />} />
-            <Route path="/atelier/sourcing" element={<StaticPageView />} />
-            <Route path="/atelier/sustainability" element={<StaticPageView />} />
-            <Route path="/atelier/routines" element={<StaticPageView />} />
-
-            {/* Concierge */}
-            <Route path="/concierge/shipping" element={<StaticPageView />} />
-            <Route path="/concierge/contact" element={<StaticPageView />} />
-            <Route path="/concierge/faq" element={<StaticPageView />} />
-            <Route path="/concierge/track" element={<StaticPageView />} />
-            <Route path="/contact" element={<ContactView />} />
-
-            {/* Legal */}
-            <Route path="/legal/terms" element={<StaticPageView />} />
-            <Route path="/legal/privacy" element={<StaticPageView />} />
-            <Route path="/legal/refunds" element={<StaticPageView />} />
-            
-            {/* About */}
-            <Route path="/about" element={<StaticPageView />} />
-
-            {/* Admin */}
-            <Route path="/admin" element={<AdminView />} />
-            <Route path="/admin/login" element={<AdminView />} />
+                    <Route path="/product/:productId" element={<DetailView />} />
+                    <Route 
+                      path="/checkout" 
+                      element={
+                        <ProtectedRoute>
+                          <CheckoutView />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route path="/cart" element={<CartView />} />
+                    <Route 
+                      path="/order-confirmation" 
+                      element={
+                        <ProtectedRoute>
+                          <OrderConfirmationView />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/profile" 
+                      element={
+                        <ProtectedRoute>
+                          <ProfileView />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Atelier */}
+              <Route path="/atelier/origin" element={<StaticPageView />} />
+              <Route path="/atelier/sourcing" element={<StaticPageView />} />
+              <Route path="/atelier/sustainability" element={<StaticPageView />} />
+              <Route path="/atelier/routines" element={<StaticPageView />} />
+  
+              {/* Concierge */}
+              <Route path="/concierge/shipping" element={<StaticPageView />} />
+              <Route path="/concierge/contact" element={<StaticPageView />} />
+              <Route path="/concierge/faq" element={<StaticPageView />} />
+              <Route path="/concierge/track" element={<StaticPageView />} />
+              <Route path="/contact" element={<ContactView />} />
+  
+              {/* Legal */}
+              <Route path="/legal/terms" element={<StaticPageView />} />
+              <Route path="/legal/privacy" element={<StaticPageView />} />
+              <Route path="/legal/refunds" element={<StaticPageView />} />
+              
+              {/* About */}
+              <Route path="/about" element={<StaticPageView />} />
+  
+              {/* Admin */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminView />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/login" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminView />
+                  </ProtectedRoute>
+                } 
+              />
           </Routes>
         </main>
 
