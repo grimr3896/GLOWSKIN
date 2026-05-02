@@ -81,32 +81,21 @@ export function SignUpView() {
     if (!isFormValid()) return;
 
     setIsLoading(true);
-    
-    try {
-      const fullName = email.split('@')[0]; // Default name if we don't have a name field yet
-      const { error } = await signup(email, password, fullName.charAt(0).toUpperCase() + fullName.slice(1));
-
-      if (error) {
-        if (error.message.includes('already registered')) {
-          addError(ErrorCode.EMAIL_ALREADY_EXISTS);
-        } else if (error.message.includes('password')) {
-          addError(ErrorCode.WEAK_PASSWORD);
-        } else {
-          addError(ErrorCode.AUTH_SIGNUP_FAILED, error.message);
+    // Mock signup process
+    setTimeout(() => {
+      try {
+        if (email === 'taken@example.com') {
+          throw new Error('Email already exists');
         }
+        const name = email.split('@')[0];
+        signup(email, name.charAt(0).toUpperCase() + name.slice(1));
         setIsLoading(false);
-        return;
+        navigate('/profile');
+      } catch (err) {
+        addError(ErrorCode.EMAIL_ALREADY_EXISTS);
+        setIsLoading(false);
       }
-
-      // Success - redirect to profile
-      navigate('/profile');
-    } catch (error) {
-      addError(
-        ErrorCode.AUTH_SIGNUP_FAILED,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
-      setIsLoading(false);
-    }
+    }, 1500);
   };
 
   return (
