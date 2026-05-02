@@ -2,9 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ArrowRight, Leaf, RotateCcw, Heart, Share2, Plus, Minus, ChevronLeft, CheckCircle2, ShoppingBag } from 'lucide-react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { dbService } from '../services/dbService';
-import { Product } from '../types';
-import { PRODUCTS } from '../constants';
+import { getProductById, getProductReviews } from '../lib/supabase';
+import { Product, ProductReview } from '../types';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useError } from '../context/ErrorContext';
@@ -20,25 +19,36 @@ export function DetailView() {
   const [activeTab, setActiveTab] = useState<'description' | 'ingredients' | 'experience' | 'reviews'>('description');
   const [toast, setToast] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const currentIndex = PRODUCTS.findIndex(p => p.id === productId);
-  const nextProduct = currentIndex !== -1 && currentIndex < PRODUCTS.length - 1 ? PRODUCTS[currentIndex + 1] : null;
-  const prevProduct = currentIndex > 0 ? PRODUCTS[currentIndex - 1] : null;
-
   useEffect(() => {
-    async function loadProduct() {
+    const loadData = async () => {
       if (!productId) return;
       setLoading(true);
-      const data = await dbService.getProductById(productId);
-      setProduct(data);
-      setLoading(false);
-      
-      if (!data) {
+
+      try {
+        const { data: prod, error: prodError } = await getProductById(productId);
+        
+        if (prod && !prodError) {
+          setProduct(prod);
+          
+          const { data: revs } = await getProductReviews(prod.id);
+          if (revs) {
+            setReviews(revs as any);
+          }
+        } else {
+          addError(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+      } catch (err) {
+        console.error('Error loading product:', err);
         addError(ErrorCode.PRODUCT_NOT_FOUND);
+      } finally {
+        setLoading(false);
       }
-    }
-    loadProduct();
+    };
+
+    loadData();
   }, [productId, addError]);
 
   const handleAddToCart = () => {
@@ -97,11 +107,6 @@ export function DetailView() {
     { id: 'reviews', label: 'Manifestations' },
   ];
 
-  const averageRating = useMemo(() => {
-    if (!product.reviews || product.reviews.length === 0) return 4.7; // Default for artifacts
-    return product.reviews.reduce((acc, rev) => acc + rev.rating, 0) / product.reviews.length;
-  }, [product.reviews]);
-
   return (
     <div className="w-full">
       <section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
@@ -114,31 +119,8 @@ export function DetailView() {
             <ChevronLeft size={16} /> Back
           </button>
 
-          {/* Inner-Collection Navigation */}
+          {/* Inner-Collection Navigation - Hidden for now as we don't have local list */}
           <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end z-20">
-            {prevProduct ? (
-              <Link 
-                to={`/product/${prevProduct.id}`}
-                className="group flex flex-col gap-3 max-w-[140px]"
-              >
-                <span className="text-[9px] uppercase tracking-[0.3em] text-brand-emerald-light/40 font-bold group-hover:text-brand-emerald-light transition-colors flex items-center gap-2">
-                  <ChevronLeft size={12} /> Previous Artifact
-                </span>
-                <span className="font-sans text-[10px] uppercase tracking-[0.2em] font-bold text-brand-surface group-hover:text-white transition-colors truncate">{prevProduct.name}</span>
-              </Link>
-            ) : <div />}
-
-            {nextProduct ? (
-              <Link 
-                to={`/product/${nextProduct.id}`}
-                className="group flex flex-col gap-3 max-w-[140px] text-right"
-              >
-                <span className="text-[9px] uppercase tracking-[0.3em] text-brand-emerald-light/40 font-bold group-hover:text-brand-emerald-light transition-colors flex items-center gap-2 justify-end">
-                   Next Artifact <ChevronLeft size={12} className="rotate-180" />
-                </span>
-                <span className="font-sans text-[10px] uppercase tracking-[0.2em] font-bold text-brand-surface group-hover:text-white transition-colors truncate">{nextProduct.name}</span>
-              </Link>
-            ) : <div />}
           </div>
 
           <div className="w-full h-full max-h-[70vh] lg:max-h-[85vh] relative px-12 transition-transform duration-1000 hover:scale-[1.02]">
@@ -173,7 +155,7 @@ export function DetailView() {
             <h1 className="font-serif text-5xl md:text-8xl text-brand-emerald mb-10 leading-[0.9] tracking-tighter uppercase font-medium">{product.name}</h1>
             
             <div className="flex items-baseline gap-8 mb-16 border-b border-brand-border/20 pb-10">
-              <span className="text-3xl font-sans text-brand-emerald tracking-[0.1em] uppercase font-light">{product.price}</span>
+              <span className="text-3xl font-sans text-brand-emerald tracking-[0.1em] uppercase font-light">${product.price}</span>
               <div className="flex items-center gap-3 border-l border-brand-border/20 pl-8">
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -185,12 +167,12 @@ export function DetailView() {
                     >
                       <Sparkles 
                         size={12} 
-                        className={star <= Math.round(averageRating) ? "text-brand-emerald-light fill-brand-emerald-light" : "text-brand-emerald/10"} 
+                        className={star <= Math.round(product.average_rating || 4.7) ? "text-brand-emerald-light fill-brand-emerald-light" : "text-brand-emerald/10"} 
                       />
                     </motion.div>
                   ))}
                 </div>
-                <span className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-emerald-light">{averageRating.toFixed(1)} / 5</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-emerald-light">{(product.average_rating || 4.7).toFixed(1)} / 5</span>
               </div>
             </div>
 
@@ -268,17 +250,17 @@ export function DetailView() {
 
                     {activeTab === 'reviews' && (
                       <div className="space-y-12">
-                        {(!product.reviews || product.reviews.length === 0) ? (
+                        {(!reviews || reviews.length === 0) ? (
                           <p className="text-sm text-brand-emerald/50 italic py-10 text-center border border-dashed border-brand-border/20 rounded-3xl">
                             No shared manifestations yet for this artifact.
                           </p>
                         ) : (
-                          product.reviews.map((review, i) => (
+                          reviews.map((review, i) => (
                             <div key={review.id} className="group">
                               <div className="flex justify-between items-start mb-4">
                                 <div className="flex flex-col gap-1">
-                                  <span className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-emerald-light">{review.user_name}</span>
-                                  <span className="text-[9px] text-brand-emerald/40 uppercase tracking-widest">{new Date(review.date).toLocaleDateString()}</span>
+                                  <span className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-emerald-light">{review.author_name}</span>
+                                  <span className="text-[9px] text-brand-emerald/40 uppercase tracking-widest">{new Date(review.created_at).toLocaleDateString()}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                   {[1, 2, 3, 4, 5].map((star) => (

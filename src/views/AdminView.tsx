@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -8,7 +8,8 @@ import {
   Package, Users, TrendingUp, 
   Plus, Search, CheckCircle2 
 } from 'lucide-react';
-import { PRODUCTS } from '../constants';
+import { getProducts } from '../lib/supabase';
+import { Product } from '../types';
 
 const data = [
   { name: 'Jan', sales: 4000, orders: 240 },
@@ -29,6 +30,22 @@ const categoryData = [
 const COLORS = ['#C8A49F', '#4D0E13', '#2C0F12', '#1A0809'];
 
 export function AdminView() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const { data } = await getProducts();
+        if (data) setProducts(data);
+      } catch (error) {
+        console.error('Failed to load admin products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
   return (
     <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-40 min-h-screen bg-[#1A0809]">
       <div className="flex flex-col md:flex-row justify-between items-start mb-12">
@@ -137,7 +154,7 @@ export function AdminView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#4D0E13]/10">
-              {PRODUCTS.slice(0, 10).map((product) => (
+              {products.slice(0, 10).map((product) => (
                 <tr key={product.id} className="hover:bg-[#1A0809]/30 transition-colors group">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-6">
@@ -146,7 +163,7 @@ export function AdminView() {
                     </div>
                   </td>
                   <td className="px-8 py-6 text-[10px] uppercase tracking-widest text-[#C8A49F]/40">{product.category}</td>
-                  <td className="px-8 py-6 text-[11px] text-white font-bold">{product.price}</td>
+                  <td className="px-8 py-6 text-[11px] text-white font-bold">${Number(product.price).toFixed(2)}</td>
                   <td className="px-8 py-6">
                     <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-[#C8A49F] font-bold">
                       <CheckCircle2 size={14} /> Active

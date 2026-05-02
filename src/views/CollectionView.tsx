@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, ArrowLeft, ArrowRight, Sparkles, Search, SlidersHorizontal } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { dbService } from '../services/dbService';
+import { getProducts } from '../lib/supabase';
 import { Product } from '../types';
+import { storeStructure } from '../constants';
 
 export function CollectionView() {
   const { category: categoryUrl } = useParams();
@@ -14,29 +15,27 @@ export function CollectionView() {
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 8;
   
-  useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
-      const data = await dbService.getProducts();
-      setProducts(data);
-      setLoading(false);
-    }
-    loadProducts();
-  }, []);
-
-  const storeStructure = [
-    {
-      title: 'Skincare',
-      categories: ['Cleansers', 'Moisturizers', 'Sunscreen', 'Serums', 'Exfoliants', 'Toners']
-    },
-    {
-      title: 'Makeup',
-      categories: ['Foundation', 'Concealer', 'Lip Products', 'Mascara', 'Eyeliner']
-    }
-  ];
-
   // Map incoming URL slugs to display names and logic
   const activeCategory = categoryUrl?.toLowerCase();
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const { data: prods, error } = await getProducts(activeCategory);
+        
+        if (prods && !error) {
+          setProducts(prods as any);
+        }
+      } catch (err) {
+        console.error('Error loading products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [activeCategory]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -70,13 +69,13 @@ export function CollectionView() {
 
     // Sorting
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
+      result.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
+      result.sort((a, b) => b.price - a.price);
     }
 
     return result;
-  }, [searchQuery, sortBy, activeCategory]);
+  }, [searchQuery, sortBy, activeCategory, products]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -229,7 +228,7 @@ export function CollectionView() {
                         <span className="text-[9px] uppercase tracking-widest text-brand-border font-extrabold">{product.subcategory}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-sans text-[10px] text-brand-emerald tracking-[0.2em] uppercase font-black block mb-1">{product.price}</span>
+                        <span className="font-sans text-[10px] text-brand-emerald tracking-[0.2em] uppercase font-black block mb-1">${product.price}</span>
                       </div>
                     </div>
                   </Link>

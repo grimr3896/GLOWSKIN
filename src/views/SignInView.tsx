@@ -15,6 +15,7 @@ export function SignInView() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,21 +25,29 @@ export function SignInView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    
+    if (!email || !password) {
+      setError('Please enter email and password');
+      return;
+    }
 
-    // Mock login process
-    setTimeout(() => {
-      // Allow any login for demo, except mock failure
-      if (email === 'fail@example.com') {
-        addError(ErrorCode.AUTH_LOGIN_FAILED);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const { error } = await login(email, password);
+
+      if (error) {
+        setError('Invalid email or password.');
         setIsLoading(false);
-      } else {
-        const name = email.split('@')[0];
-        login(email, name.charAt(0).toUpperCase() + name.slice(1));
-        setIsLoading(false);
-        navigate('/profile');
+        return;
       }
-    }, 1500);
+
+      navigate('/profile');
+    } catch (err) {
+      setError('An unexpected error occurred.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -94,6 +103,7 @@ export function SignInView() {
             </div>
 
             <div className="pt-4">
+              {error && <p className="text-[#FF6B6B] text-xs text-center font-bold mb-4">{error}</p>}
               <button 
                 type="submit"
                 disabled={isLoading}

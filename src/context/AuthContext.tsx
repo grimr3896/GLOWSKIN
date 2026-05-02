@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
+import { supabase, signUp, signIn, signOut, getProfile } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  signup: (email: string, name: string) => void;
-  login: (email: string, name: string) => void;
-  logout: () => void;
+  signup: (email: string, password: string, fullName: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<any>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,45 +18,104 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('glowskin_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    const initAuth = async () => {
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        
+        if (authUser) {
+          const { data: profile } = await getProfile(authUser.id);
+          
+          if (profile) {
+            setUser({
+              id: authUser.id,
+              email: authUser.email!,
+              name: profile.full_name || authUser.email!,
+              phone: profile.phone,
+              role: profile.role || 'customer',
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Auth init error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const { data: profile } = await getProfile(session.user.id);
+          
+          setUser({
+            id: session.user.id,
+            email: session.user.email!,
+            name: profile?.full_name || session.user.email!,
+            phone: profile?.phone,
+            role: profile?.role || 'customer',
+          });
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => subscription?.unsubscribe();
   }, []);
 
-  const login = (email: string, name: string) => {
-    const userData: User = { 
-      id: Math.random().toString(36).substr(2, 9), 
-      email, 
-      name, 
-      role: 'customer' 
-    };
-    setUser(userData);
-    localStorage.setItem('glowskin_user', JSON.stringify(userData));
-    localStorage.setItem('glowskin_token', 'mock_token_' + Date.now());
+  const signup = async (email: string, password: string, fullName: string) => {
+    const { data, error } = await signUp(email, password, fullName);
+    
+    if (!error && data?.user && data?.session) {
+      // Profile is created by DB trigger, we just set the local user state
+      setUser({
+        id: data.user.id,
+        email: data.user.email!,
+        name: fullName,
+        role: 'customer',
+      });
+    }
+    
+    return { data, error };
   };
 
-  const signup = (email: string, name: string) => {
-    const userData: User = { 
-      id: Math.random().toString(36).substr(2, 9), 
-      email, 
-      name, 
-      role: 'customer' 
-    };
-    setUser(userData);
-    localStorage.setItem('glowskin_user', JSON.stringify(userData));
-    localStorage.setItem('glowskin_token', 'mock_token_' + Date.now());
+  const login = async (email: string, password: string) => {
+    const { data, error } = await signIn(email, password);
+    
+    if (!error && data.user) {
+      const { data: profile } = await getProfile(data.user.id);
+      
+      setUser({
+        id: data.user.id,
+        email: data.user.email!,
+        name: profile?.full_name || email,
+        phone: profile?.phone,
+        role: profile?.role || 'customer',
+      });
+    }
+    
+    return { error };
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await signOut();
     setUser(null);
-    localStorage.removeItem('glowskin_user');
-    localStorage.removeItem('glowskin_token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, signup }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        signup,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -63,8 +123,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 }

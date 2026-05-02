@@ -1,9 +1,39 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Sparkles, Leaf, Beaker, Heart, Rabbit } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS } from '../constants';
+import { getProducts } from '../lib/supabase';
+import { Product } from '../types';
 
 export function HomeView() {
+  const [scincareProducts, setScincareProducts] = useState<Product[]>([]);
+  const [makeupProducts, setMakeupProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const { data: allProducts } = await getProducts();
+        if (allProducts) {
+          const skincare = (allProducts as any).filter((p: any) => 
+            ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory?.toLowerCase())
+          ).slice(0, 4);
+          
+          const makeup = (allProducts as any).filter((p: any) => 
+            ['foundation', 'lip products', 'mascara', 'concealer', 'eyebrow', 'eyeliner'].includes(p.subcategory?.toLowerCase())
+          ).slice(0, 4);
+          
+          setScincareProducts(skincare);
+          setMakeupProducts(makeup);
+        }
+      } catch (error) {
+        console.error('Failed to load home products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
   return (
     <div className="w-full relative">
       <div className="fixed inset-0 -z-10 bg-brand-black">
@@ -75,7 +105,7 @@ export function HomeView() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
-          {PRODUCTS.filter(p => ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
+          {scincareProducts.map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}
@@ -97,7 +127,7 @@ export function HomeView() {
                 <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
                 <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
                 <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
-                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
+                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">${Number(product.price).toFixed(2)}</span>
               </div>
             </motion.div>
           ))}
@@ -122,7 +152,7 @@ export function HomeView() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
-          {PRODUCTS.filter(p => ['foundation', 'lip products', 'mascara'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
+          {makeupProducts.map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}
@@ -144,7 +174,7 @@ export function HomeView() {
                 <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
                 <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
                 <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
-                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">{product.price}</span>
+                <span className="text-[13px] font-sans text-brand-border tracking-[0.3em] uppercase font-black">${Number(product.price).toFixed(2)}</span>
               </div>
             </motion.div>
           ))}

@@ -4,7 +4,7 @@ import { X, CheckCircle2, User as UserIcon, AlertCircle, ChevronRight, Package }
 import { User, Order } from '../types';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getOrders } from '../lib/orderService';
+import { getOrders } from '../lib/supabase';
 
 export function ProfileView() {
   const navigate = useNavigate();
@@ -22,23 +22,31 @@ export function ProfileView() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const allOrders = getOrders();
-      // Filter orders for the current user
-      const userOrders = allOrders.filter(o => o.userId === user.id);
-      setOrders(userOrders);
+      const loadOrders = async () => {
+        try {
+          const { data: userOrders, error } = await getOrders(user.id);
+          if (userOrders && !error) {
+            setOrders(userOrders as any);
 
-      // Check for orderNumber in URL
-      const params = new URLSearchParams(window.location.search);
-      const orderNum = params.get('orderNumber');
-      if (orderNum) {
-        const orderToShow = userOrders.find(o => o.orderNumber === orderNum);
-        if (orderToShow) {
-          setSelectedOrder(orderToShow);
-          setActiveModal('order');
-          // Clear param to avoid re-opening on every render
-          window.history.replaceState({}, '', window.location.pathname);
+            // Check for orderNumber in URL
+            const params = new URLSearchParams(window.location.search);
+            const orderNum = params.get('orderNumber');
+            if (orderNum) {
+              const orderToShow = (userOrders as any).find((o: any) => o.order_number === orderNum);
+              if (orderToShow) {
+                setSelectedOrder(orderToShow);
+                setActiveModal('order');
+                // Clear param to avoid re-opening on every render
+                window.history.replaceState({}, '', window.location.pathname);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error loading orders:', err);
         }
-      }
+      };
+      
+      loadOrders();
     }
   }, [isAuthenticated, user]);
 
@@ -165,8 +173,8 @@ export function ProfileView() {
                     className="group flex flex-col md:flex-row justify-between items-start md:items-center p-5 hover:bg-white/5 rounded-xl transition-all cursor-pointer border-b border-white/5 last:border-0"
                   >
                     <div className="flex flex-col gap-1 mb-2 md:mb-0">
-                      <span className="text-white text-sm font-sans font-bold tracking-tight">{order.orderNumber}</span>
-                      <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em]">{new Date(order.createdAt).toLocaleDateString()}</span>
+                      <span className="text-white text-sm font-sans font-bold tracking-tight">{order.order_number}</span>
+                      <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em]">{new Date(order.created_at).toLocaleDateString()}</span>
                     </div>
                     <div className="flex items-center gap-10 w-full md:w-auto justify-between">
                       <span className="text-white text-sm font-sans font-bold">${order.total.toFixed(2)}</span>
@@ -294,11 +302,11 @@ export function ProfileView() {
 
               {activeModal === 'order' && selectedOrder && (
                 <div>
-                   <h2 className="font-serif text-3xl text-white italic mb-8 border-b border-white/10 pb-6 tracking-tight">{selectedOrder.orderNumber}</h2>
+                   <h2 className="font-serif text-3xl text-white italic mb-8 border-b border-white/10 pb-6 tracking-tight">{selectedOrder.order_number}</h2>
                    <div className="grid grid-cols-2 gap-8 mb-10 text-sm">
                       <div>
                         <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em] font-black block mb-2">Manifest Date</span>
-                        <span className="text-white font-bold">{new Date(selectedOrder.createdAt).toLocaleDateString()}</span>
+                        <span className="text-white font-bold">{new Date(selectedOrder.created_at).toLocaleDateString()}</span>
                       </div>
                       <div>
                         <span className="text-[#B0B0B0] text-[10px] uppercase tracking-[0.2em] font-black block mb-2">Logistical Status</span>
@@ -310,17 +318,17 @@ export function ProfileView() {
 
                     <div className="space-y-4 max-h-56 overflow-y-auto mb-10 border-y border-white/5 py-6 pr-4 custom-scrollbar">
                       <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Acquired Items</p>
-                      {selectedOrder.items.map((item, idx) => (
+                      {selectedOrder.order_items?.map((item, idx) => (
                         <button 
                           key={idx} 
-                          onClick={() => { setActiveModal(null); navigate(`/product/${item.productId}`); }}
+                          onClick={() => { setActiveModal(null); navigate(`/product/${item.product_id}`); }}
                           className="w-full flex justify-between items-center text-sm group text-left hover:bg-white/5 p-2 rounded-lg transition-all"
                         >
                           <div className="flex flex-col">
-                            <span className="text-white font-medium group-hover:text-[#1DB679] transition-colors tracking-tight">{item.productName}</span>
+                            <span className="text-white font-medium group-hover:text-[#1DB679] transition-colors tracking-tight">{item.product_name}</span>
                             <span className="text-[10px] text-[#B0B0B0] uppercase tracking-widest">Qty: {item.quantity}</span>
                           </div>
-                          <span className="text-white font-bold tracking-tight">${(item.price * item.quantity).toFixed(2)}</span>
+                          <span className="text-white font-bold tracking-tight">${(item.price_per_unit * item.quantity).toFixed(2)}</span>
                         </button>
                       ))}
                     </div>
@@ -328,9 +336,9 @@ export function ProfileView() {
                    <div className="mb-10">
                       <p className="text-[#1DB679] text-[10px] uppercase tracking-[0.3em] font-black mb-4">Destination Routine</p>
                       <address className="not-italic text-white text-sm leading-relaxed tracking-wide opacity-80 font-serif italic">
-                        {selectedOrder.shippingName}<br />
-                        {selectedOrder.shippingAddress}<br />
-                        {selectedOrder.shippingCity}, {selectedOrder.shippingZip}
+                        {selectedOrder.customer_name}<br />
+                        {selectedOrder.shipping_address}<br />
+                        {selectedOrder.shipping_city}, {selectedOrder.shipping_zip}
                       </address>
                    </div>
 

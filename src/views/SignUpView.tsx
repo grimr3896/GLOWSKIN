@@ -11,6 +11,7 @@ export function SignUpView() {
   const { signup, isAuthenticated } = useAuth();
   const { addError } = useError();
   
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,6 +19,7 @@ export function SignUpView() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [emailStatus, setEmailStatus] = useState<{ available: boolean | null; message: string }>({ available: null, message: '' });
   
   const [passwordValidation, setPasswordValidation] = useState({
@@ -78,24 +80,38 @@ export function SignUpView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid()) return;
+    
+    if (!isFormValid()) {
+      setError('Please fill in all fields correctly');
+      return;
+    }
 
     setIsLoading(true);
-    // Mock signup process
-    setTimeout(() => {
-      try {
-        if (email === 'taken@example.com') {
-          throw new Error('Email already exists');
+    setError('');
+
+    try {
+      const { data, error } = await signup(email, password, fullName);
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          setError('Email already in use. Please sign in instead.');
+        } else {
+          setError(error.message || 'Signup failed. Please try again.');
         }
-        const name = email.split('@')[0];
-        signup(email, name.charAt(0).toUpperCase() + name.slice(1));
         setIsLoading(false);
-        navigate('/profile');
-      } catch (err) {
-        addError(ErrorCode.EMAIL_ALREADY_EXISTS);
-        setIsLoading(false);
+        return;
       }
-    }, 1500);
+
+      // If email confirmation is enabled, session will be null
+      if (data?.user && !data?.session) {
+        navigate('/check-email');
+      } else {
+        navigate('/profile');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -137,6 +153,19 @@ export function SignUpView() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label className="text-[12px] text-[#B0B0B0] font-bold uppercase tracking-widest block">Full Name</label>
+                <input 
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your Name"
+                  className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_10px_rgba(0,229,255,0.2)] outline-none transition-all"
+                  required
+                />
+              </div>
+
               {/* Email */}
               <div className="space-y-2">
                 <label className="text-[12px] text-[#B0B0B0] font-bold uppercase tracking-widest block">Email</label>
@@ -245,6 +274,7 @@ export function SignUpView() {
               </label>
 
               {/* Submit Button */}
+              {error && <p className="text-[#FF6B6B] text-xs text-center font-bold">{error}</p>}
               <button 
                 type="submit"
                 disabled={!isFormValid() || isLoading}
