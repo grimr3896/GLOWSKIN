@@ -2,9 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, ArrowLeft, ArrowRight, Sparkles, Search, SlidersHorizontal } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { getProducts } from '../lib/supabase';
+import { dbService } from '../services/dbService';
 import { Product } from '../types';
-import { storeStructure } from '../constants';
 
 export function CollectionView() {
   const { category: categoryUrl } = useParams();
@@ -15,27 +14,29 @@ export function CollectionView() {
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 8;
   
+  useEffect(() => {
+    async function loadProducts() {
+      setLoading(true);
+      const data = await dbService.getProducts();
+      setProducts(data);
+      setLoading(false);
+    }
+    loadProducts();
+  }, []);
+
+  const storeStructure = [
+    {
+      title: 'Skincare',
+      categories: ['Cleansers', 'Moisturizers', 'Serums', 'Exfoliants', 'Toners']
+    },
+    {
+      title: 'Makeup',
+      categories: ['Foundation', 'Concealer', 'Lip Products', 'Mascara', 'Eyeliner']
+    }
+  ];
+
   // Map incoming URL slugs to display names and logic
   const activeCategory = categoryUrl?.toLowerCase();
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      setLoading(true);
-      try {
-        const { data: prods, error } = await getProducts(activeCategory);
-        
-        if (prods && !error) {
-          setProducts(prods as any);
-        }
-      } catch (err) {
-        console.error('Error loading products:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
-  }, [activeCategory]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -69,13 +70,13 @@ export function CollectionView() {
 
     // Sorting
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => a.price - b.price);
+      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
     }
 
     return result;
-  }, [searchQuery, sortBy, activeCategory, products]);
+  }, [searchQuery, sortBy, activeCategory]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -149,17 +150,6 @@ export function CollectionView() {
         <aside className="w-full lg:w-72 shrink-0 space-y-16">
           <div>
             <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-brand-emerald mb-10 pb-4 border-b border-brand-border">Shop</h3>
-            <ul className="space-y-6 text-sm text-brand-emerald-light uppercase tracking-widest mb-10 font-bold">
-              <li className="text-[10px]">
-                <Link 
-                  to="/shop" 
-                  className={`flex items-center justify-between group hover:text-brand-emerald transition-colors ${!activeCategory ? 'text-brand-emerald' : ''}`}
-                >
-                  <span>All Products</span>
-                </Link>
-              </li>
-            </ul>
-
             {storeStructure.map((group) => (
               <div key={group.title} className="mb-10 last:mb-0">
                 <Link 
@@ -228,7 +218,7 @@ export function CollectionView() {
                         <span className="text-[9px] uppercase tracking-widest text-brand-border font-extrabold">{product.subcategory}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-sans text-[10px] text-brand-emerald tracking-[0.2em] uppercase font-black block mb-1">${product.price}</span>
+                        <span className="font-sans text-[10px] text-brand-emerald tracking-[0.2em] uppercase font-black block mb-1">{product.price}</span>
                       </div>
                     </div>
                   </Link>

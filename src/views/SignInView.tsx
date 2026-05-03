@@ -1,51 +1,144 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useError } from '../context/ErrorContext';
-import { ErrorCode } from '../types/errors';
+import { supabase } from '../supabaseClient';
 
 export function SignInView() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isAuthenticated } = useAuth();
-  const { addError } = useError();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/profile');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    // Check for success message or pre-filled email from signup
+    if (location.state?.email) {
+      setEmail(location.state.email);
+    }
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+    }
+
+    // Check if redirected from forgot password
+    const params = new URLSearchParams(location.search);
+    if (params.get('reset') === 'success') {
+      setSuccessMessage('Password reset link sent to your email');
+    }
+  }, [location]);
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const clearErrors = () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (errorMessage.includes('Email')) clearErrors();
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (errorMessage.includes('Password')) clearErrors();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      setError('Please enter email and password');
+    clearErrors();
+
+    if (!email) {
+      setErrorMessage('Email is required');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address');
+      return;
+    }
+
+    if (!password) {
+      setErrorMessage('Password is required');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
-      const { error } = await login(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (error) {
-        setError('Invalid email or password.');
+        if (error.message === 'Invalid login credentials') {
+          setErrorMessage('Incorrect email or password. Please try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrorMessage('Please confirm your email address before signing in. Check your inbox.');
+        } else if (error.status === 429) {
+          setErrorMessage('Too many attempts. Please try again later.');
+        } else {
+          setErrorMessage(error.message);
+        }
         setIsLoading(false);
         return;
       }
 
-      navigate('/profile');
-    } catch (err) {
-      setError('An unexpected error occurred.');
+      if (data.user && data.session) {
+        // Update local auth context
+        const name = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
+        login(data.user.email || email, name);
+        navigate('/');
+      } else if (data.user && !data.session) {
+        setErrorMessage('Please confirm your email address before signing in.');
+        setIsLoading(false);
+      }
+    } catch (err: any) {
+      setErrorMessage('Network error. Check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    clearErrors();
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/',
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Note: sign-in usually happens via redirect, but we handle standard errors here if any
+    } catch (err: any) {
+      if (err.message?.includes('popup_closed_by_user')) {
+        setErrorMessage('Sign in cancelled');
+      } else {
+        setErrorMessage('Google sign-in failed. Please try again.');
+      }
       setIsLoading(false);
     }
   };
@@ -71,26 +164,24 @@ export function SignInView() {
               <input 
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="routines@glowskin.com"
-                className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-4 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.2)] outline-none transition-all placeholder:text-white/10"
-                required
+                onChange={handleEmailChange}
+                placeholder="name@example.com"
+                className={`w-full bg-black border ${errorMessage.includes('Email') ? 'border-red-500' : 'border-[#1DB679]'} rounded-lg px-4 py-4 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.2)] outline-none transition-all placeholder:text-white/20`}
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="text-[10px] text-[#B0B0B0] font-black uppercase tracking-[0.3em] block">Password</label>
-                <Link to="/auth/forgot" className="text-[10px] text-[#00E5FF] uppercase tracking-widest font-bold hover:underline">Forgot?</Link>
+                <Link to="/auth/forgot" className="text-[10px] text-[#00E5FF] uppercase tracking-widest font-bold hover:underline">Forgot password?</Link>
               </div>
               <div className="relative">
                 <input 
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-4 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.2)] outline-none transition-all placeholder:text-white/10 pr-12"
-                  required
+                  onChange={handlePasswordChange}
+                  placeholder="Enter your password"
+                  className={`w-full bg-black border ${errorMessage.includes('Password') ? 'border-red-500' : 'border-[#1DB679]'} rounded-lg px-4 py-4 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_15px_rgba(0,229,255,0.2)] outline-none transition-all placeholder:text-white/20 pr-12`}
                 />
                 <button 
                   type="button"
@@ -102,14 +193,63 @@ export function SignInView() {
               </div>
             </div>
 
-            <div className="pt-4">
-              {error && <p className="text-[#FF6B6B] text-xs text-center font-bold mb-4">{error}</p>}
+            <div className="flex items-center">
+              <input 
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-[#1DB679] bg-black text-[#1DB679] focus:ring-[#00E5FF]"
+              />
+              <label htmlFor="rememberMe" className="ml-2 text-[10px] text-[#B0B0B0] font-bold uppercase tracking-widest cursor-pointer">Remember me</label>
+            </div>
+
+            <div className="pt-4 space-y-4">
               <button 
                 type="submit"
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-3 bg-[#1DB679] text-white py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_20px_rgba(29,182,121,0.3)] transition-all disabled:opacity-50"
               >
-                {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Unlock Account'}
+                {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Sign In'}
+              </button>
+
+              {errorMessage && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-[11px] font-bold text-center mt-4"
+                >
+                  {errorMessage}
+                </motion.p>
+              )}
+
+              {successMessage && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[#1DB679] text-[11px] font-bold text-center mt-4"
+                >
+                  {successMessage}
+                </motion.p>
+              )}
+
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase">
+                  <span className="bg-[#0A0E27] px-2 text-[#B0B0B0] tracking-widest font-bold">Or continue with</span>
+                </div>
+              </div>
+
+              <button 
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 bg-white text-[#0A0E27] py-4 rounded-xl text-[12px] font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all disabled:opacity-50"
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+                Continue with Google
               </button>
             </div>
 

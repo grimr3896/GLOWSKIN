@@ -10,10 +10,8 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useError } from '../context/ErrorContext';
 import { ErrorCode } from '../types/errors';
-import { createOrder, createOrderItems, clearCart as clearCartInDB } from '../lib/supabase';
-
-// Mock email service replacement if needed or just remove it if not used
-// import { sendOrderConfirmationEmail } from '../lib/emailService';
+import { createOrder } from '../lib/orderService';
+import { sendOrderConfirmationEmail } from '../lib/emailService';
 
 type Step = 'shipping' | 'payment' | 'confirmation';
 
@@ -141,57 +139,38 @@ export function CheckoutView() {
     setIsProcessing(true);
 
     try {
-      const orderNumber = `ORD-${Date.now()}`;
-      const calculateTax = (subtotal: number) => subtotal * 0.08;
-      const tax = calculateTax(cart.totalPrice);
-      const shippingPrice = shippingMethod === 'exp' ? 24 : 0;
-
       // 1. Create order in database
-      const { data: orderData, error: orderError } = await createOrder({
-        order_number: orderNumber,
-        user_id: user.id,
-        customer_email: shippingDetails.email,
-        customer_name: shippingDetails.name,
-        customer_phone: paymentDetails.phone,
-        shipping_address: shippingDetails.address,
-        shipping_city: shippingDetails.city,
-        shipping_state: '', // Not collected in current form
-        shipping_zip: shippingDetails.zip,
-        shipping_country: 'US',
-        shipping_method: shippingMethod === 'std' ? 'standard' : 'express',
-        payment_method: paymentMethod,
-        payment_status: 'succeeded',
-        subtotal: cart.totalPrice,
-        shipping_cost: shippingPrice,
-        tax,
-        total: cart.totalPrice + shippingPrice + tax,
-        status: 'pending',
+      const newOrder = await createOrder({
+        userId: user.id,
+        email: user.email,
+        cartItems: cart.items,
+        shippingDetails: {
+          name: shippingDetails.name,
+          email: shippingDetails.email,
+          address: shippingDetails.address,
+          city: shippingDetails.city,
+          state: '', // Not collected in current form
+          zip: shippingDetails.zip,
+        },
+        shippingMethod: shippingMethod === 'std' ? 'standard' : 'express',
+        paymentMethod: paymentMethod,
+        stripePaymentIntentId,
       });
 
-      if (orderError || !orderData) {
-        throw new Error(orderError?.message || 'Order creation failed');
+      setOrder(newOrder);
+
+      // 2. Send confirmation email
+      try {
+        await sendOrderConfirmationEmail({
+          email: user.email,
+          orderNumber: newOrder.orderNumber,
+          order: newOrder,
+        });
+      } catch (emailError) {
+        console.error('Email send failed:', emailError);
       }
 
-      const createdOrder = orderData[0] as Order;
-      setOrder(createdOrder);
-
-      // 2. Create order items
-      const orderItems = cart.items.map(item => ({
-        order_id: createdOrder.id,
-        product_id: item.productId,
-        product_name: item.name,
-        quantity: item.quantity,
-        price_per_unit: item.price,
-        subtotal: item.price * item.quantity,
-      }));
-
-      const { error: itemsError } = await createOrderItems(orderItems);
-      if (itemsError) {
-        console.error('Order items creation failed:', itemsError);
-      }
-
-      // 3. Clear cart in DB and locally
-      await clearCartInDB(user.id);
+      // 3. Clear cart
       clearCart();
 
       // 4. Show confirmation page
@@ -199,7 +178,7 @@ export function CheckoutView() {
       
       // Auto-redirect after 5 seconds to profile with order number
       const timer = setTimeout(() => {
-        navigate(`/profile?orderNumber=${createdOrder.order_number}`);
+        navigate(`/profile?orderNumber=${newOrder.orderNumber}`);
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -510,7 +489,7 @@ export function CheckoutView() {
                       <div className="space-y-4">
                         <div className="flex justify-between border-b border-brand-border pb-3">
                           <span className="text-[11px] uppercase tracking-widest text-slate-300">Reference No.</span>
-                          <span className="font-serif text-slate-100">{order?.order_number || 'AB-2024-9981'}</span>
+                          <span className="font-serif text-slate-100">{order?.orderNumber || 'AB-2024-9981'}</span>
                         </div>
                         <div className="flex justify-between border-b border-brand-border pb-3">
                           <span className="text-[11px] uppercase tracking-widest text-slate-300">Arrival Est.</span>

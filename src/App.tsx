@@ -13,7 +13,6 @@ import { StaticPageView } from './views/StaticPageView';
 import { ContactView } from './views/ContactView';
 import { SignUpView } from './views/SignUpView';
 import { SignInView } from './views/SignInView';
-import { CheckEmailView } from './views/CheckEmailView';
 import { CartView } from './views/CartView';
 import { OrderConfirmationView } from './views/OrderConfirmationView';
 import { AuthProvider } from './context/AuthContext';
@@ -51,7 +50,7 @@ export default function App() {
                     {/* Authenticated Routes */}
                     <Route path="/auth/signup" element={<SignUpView />} />
                     <Route path="/auth/signin" element={<SignInView />} />
-                    <Route path="/check-email" element={<CheckEmailView />} />
+                    <Route path="/login" element={<SignInView />} />
                     <Route path="/auth/forgot" element={<StaticPageView />} />
 
                     {/* Shop & Collections */}

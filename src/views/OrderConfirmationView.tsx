@@ -11,33 +11,32 @@ export function OrderConfirmationView() {
   // For now, mock order
   const mockOrder: Order = {
     id: '1',
-    order_number: orderNumber || 'ORD-2024-00123',
-    user_id: '1',
-    customer_email: 'user@example.com',
-    customer_name: 'John Doe',
-    created_at: new Date().toISOString(),
+    orderNumber: orderNumber || 'ORD-2024-00123',
+    userId: '1',
+    email: 'user@example.com',
+    createdAt: new Date().toISOString(),
     status: 'pending',
-    shipping_address: '123 Main St',
-    shipping_city: 'New York',
-    shipping_state: 'NY',
-    shipping_zip: '10001',
-    shipping_country: 'US',
-    shipping_method: 'standard',
-    payment_method: 'card',
-    payment_status: 'succeeded',
-    order_items: [
+    shippingName: 'John Doe',
+    shippingAddress: '123 Main St',
+    shippingCity: 'New York',
+    shippingState: 'NY',
+    shippingZip: '10001',
+    shippingMethod: 'standard',
+    paymentMethod: 'card',
+    paymentStatus: 'succeeded',
+    items: [
       {
         id: '1',
-        order_id: '1',
-        product_id: '1',
-        product_name: 'Hydrating Serum',
+        orderId: '1',
+        productId: '1',
+        productName: 'Hydrating Serum',
         quantity: 1,
-        price_per_unit: 58,
+        price: 58,
         subtotal: 58,
       },
     ],
     subtotal: 58,
-    shipping_cost: 0,
+    shippingCost: 0,
     tax: 4.64,
     total: 62.64,
   };
@@ -70,7 +69,7 @@ export function OrderConfirmationView() {
           </p>
           <div className="inline-block bg-brand-black border border-brand-emerald px-6 py-3 rounded-lg">
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Order Number</p>
-            <p className="font-mono text-brand-emerald-light text-lg">{mockOrder.order_number}</p>
+            <p className="font-mono text-brand-emerald-light text-lg">{mockOrder.orderNumber}</p>
           </div>
         </motion.div>
 
@@ -85,10 +84,10 @@ export function OrderConfirmationView() {
 
           {/* Items */}
           <div className="space-y-4 mb-8 pb-8 border-b border-brand-border">
-            {mockOrder.order_items?.map((item) => (
+            {mockOrder.items.map((item) => (
               <div key={item.id} className="flex justify-between">
                 <div>
-                  <p className="text-white text-sm font-bold uppercase tracking-widest">{item.product_name}</p>
+                  <p className="text-white text-sm font-bold uppercase tracking-widest">{item.productName}</p>
                   <p className="text-slate-500 text-[10px] uppercase font-black tracking-widest mt-1">Qty: {item.quantity}</p>
                 </div>
                 <p className="text-brand-emerald-light font-bold">${item.subtotal.toFixed(2)}</p>
@@ -104,7 +103,7 @@ export function OrderConfirmationView() {
             </div>
             <div className="flex justify-between text-slate-400 text-[10px] uppercase tracking-widest font-bold">
               <span>Shipping</span>
-              <span>${mockOrder.shipping_cost.toFixed(2)}</span>
+              <span>${mockOrder.shippingCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-slate-400 text-[10px] uppercase tracking-widest font-bold">
               <span>Tax</span>
@@ -120,9 +119,9 @@ export function OrderConfirmationView() {
           <div>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-3 font-bold">Shipping Address</p>
             <div className="text-slate-100 italic">
-              <p className="font-serif text-lg">{mockOrder.customer_name}</p>
-              <p className="text-sm mt-1">{mockOrder.shipping_address}</p>
-              <p className="text-sm">{mockOrder.shipping_city}, {mockOrder.shipping_state} {mockOrder.shipping_zip}</p>
+              <p className="font-serif text-lg">{mockOrder.shippingName}</p>
+              <p className="text-sm mt-1">{mockOrder.shippingAddress}</p>
+              <p className="text-sm">{mockOrder.shippingCity}, {mockOrder.shippingState} {mockOrder.shippingZip}</p>
             </div>
           </div>
         </motion.div>
@@ -167,7 +166,7 @@ export function OrderConfirmationView() {
           className="bg-brand-emerald/10 border border-brand-emerald/30 rounded-lg p-4 mb-8 text-center"
         >
           <p className="text-brand-emerald-light text-xs uppercase tracking-widest font-bold">
-            ✓ Confirmation email sent to <span className="text-white">{mockOrder.customer_email}</span>
+            ✓ Confirmation email sent to <span className="text-white">{mockOrder.email}</span>
           </p>
         </motion.div>
 

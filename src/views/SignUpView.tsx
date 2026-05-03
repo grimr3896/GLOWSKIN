@@ -3,15 +3,12 @@ import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useError } from '../context/ErrorContext';
-import { ErrorCode } from '../types/errors';
+import { supabase } from '../supabaseClient';
 
 export function SignUpView() {
   const navigate = useNavigate();
   const { signup, isAuthenticated } = useAuth();
-  const { addError } = useError();
   
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,8 +16,7 @@ export function SignUpView() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [emailStatus, setEmailStatus] = useState<{ available: boolean | null; message: string }>({ available: null, message: '' });
+  const [errorMessage, setErrorMessage] = useState('');
   
   const [passwordValidation, setPasswordValidation] = useState({
     length: false,
@@ -29,7 +25,7 @@ export function SignUpView() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/profile');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -44,21 +40,6 @@ export function SignUpView() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
   };
 
-  const handleEmailBlur = async () => {
-    if (!validateEmail(email)) return;
-    
-    // Mocking an API call to check email availability
-    setIsLoading(true);
-    setTimeout(() => {
-      if (email === 'taken@example.com') {
-        setEmailStatus({ available: false, message: 'Email already in use. Sign in instead?' });
-      } else {
-        setEmailStatus({ available: true, message: '✓ Email available' });
-      }
-      setIsLoading(false);
-    }, 800);
-  };
-
   const getPasswordStrength = () => {
     const met = Object.values(passwordValidation).filter(Boolean).length;
     if (met === 0) return { color: '#FF6B6B', label: 'Weak', width: '25%' };
@@ -71,7 +52,6 @@ export function SignUpView() {
   const isFormValid = () => {
     return (
       validateEmail(email) &&
-      emailStatus.available !== false &&
       Object.values(passwordValidation).every(Boolean) &&
       password === confirmPassword &&
       agreeToTerms
@@ -80,36 +60,47 @@ export function SignUpView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!isFormValid()) {
-      setError('Please fill in all fields correctly');
-      return;
-    }
+    if (!isFormValid()) return;
 
     setIsLoading(true);
-    setError('');
+    setErrorMessage('');
 
     try {
-      const { data, error } = await signup(email, password, fullName);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: email.split('@')[0],
+          }
+        }
+      });
 
       if (error) {
-        if (error.message.includes('already registered')) {
-          setError('Email already in use. Please sign in instead.');
-        } else {
-          setError(error.message || 'Signup failed. Please try again.');
-        }
+        setErrorMessage(error.message);
         setIsLoading(false);
         return;
       }
 
-      // If email confirmation is enabled, session will be null
-      if (data?.user && !data?.session) {
-        navigate('/check-email');
-      } else {
-        navigate('/profile');
+      if (data.user) {
+        if (!data.session) {
+          // Success but needs verification
+          navigate('/auth/signin', { 
+            state: { 
+              email, 
+              message: 'Account created! Please check your email to verify before signing in.' 
+            } 
+          });
+        } else {
+          // Auto-logged in (if email verification is disabled in Supabase)
+          const name = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
+          signup(data.user.email || email, name);
+          navigate('/');
+        }
       }
-    } catch (err) {
-      setError('An unexpected error occurred.');
+    } catch (err: any) {
+      setErrorMessage('Network error. Check your connection.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -153,19 +144,6 @@ export function SignUpView() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name */}
-              <div className="space-y-2">
-                <label className="text-[12px] text-[#B0B0B0] font-bold uppercase tracking-widest block">Full Name</label>
-                <input 
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your Name"
-                  className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_10px_rgba(0,229,255,0.2)] outline-none transition-all"
-                  required
-                />
-              </div>
-
               {/* Email */}
               <div className="space-y-2">
                 <label className="text-[12px] text-[#B0B0B0] font-bold uppercase tracking-widest block">Email</label>
@@ -174,18 +152,12 @@ export function SignUpView() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    setEmailStatus({ available: null, message: '' });
+                    setErrorMessage('');
                   }}
-                  onBlur={handleEmailBlur}
                   placeholder="your@email.com"
-                  className={`w-full bg-black border ${emailStatus.available === false ? 'border-[#FF6B6B]' : emailStatus.available === true ? 'border-[#00F5B8]' : 'border-[#1DB679]'} rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_10px_rgba(0,229,255,0.2)] outline-none transition-all`}
+                  className="w-full bg-black border border-[#1DB679] rounded-lg px-4 py-3 text-white font-sans text-sm focus:border-[#00E5FF] focus:shadow-[0_0_10px_rgba(0,229,255,0.2)] outline-none transition-all"
                   required
                 />
-                {emailStatus.message && (
-                  <p className={`text-[11px] font-bold ${emailStatus.available === false ? 'text-[#FF6B6B]' : 'text-[#00F5B8]'}`}>
-                    {emailStatus.message}
-                  </p>
-                )}
               </div>
 
               {/* Password */}
@@ -274,14 +246,21 @@ export function SignUpView() {
               </label>
 
               {/* Submit Button */}
-              {error && <p className="text-[#FF6B6B] text-xs text-center font-bold">{error}</p>}
-              <button 
-                type="submit"
-                disabled={!isFormValid() || isLoading}
-                className={`w-full flex items-center justify-center gap-3 py-4 rounded-xl text-[14px] font-bold uppercase tracking-[0.2em] transition-all relative overflow-hidden ${isFormValid() && !isLoading ? 'bg-[#00E5FF] text-black hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] hover:-translate-y-0.5' : 'bg-[#B0B0B0]/20 text-[#B0B0B0] cursor-not-allowed'}`}
-              >
-                {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Sign Up'}
-              </button>
+              <div className="space-y-4">
+                <button 
+                  type="submit"
+                  disabled={!isFormValid() || isLoading}
+                  className={`w-full flex items-center justify-center gap-3 py-4 rounded-xl text-[14px] font-bold uppercase tracking-[0.2em] transition-all relative overflow-hidden ${isFormValid() && !isLoading ? 'bg-[#00E5FF] text-black hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] hover:-translate-y-0.5' : 'bg-[#B0B0B0]/20 text-[#B0B0B0] cursor-not-allowed'}`}
+                >
+                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Sign Up'}
+                </button>
+
+                {errorMessage && (
+                  <p className="text-red-500 text-[11px] font-bold text-center mt-2">
+                    {errorMessage}
+                  </p>
+                )}
+              </div>
 
               <div className="text-center pt-4">
                 <p className="text-[12px] text-[#B0B0B0]">

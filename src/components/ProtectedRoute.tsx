@@ -24,7 +24,7 @@ export function ProtectedRoute({
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/auth/signin" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (requiredRole && user?.role !== requiredRole) {

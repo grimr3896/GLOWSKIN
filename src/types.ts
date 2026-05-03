@@ -1,26 +1,11 @@
 export type Page = 'home' | 'collection' | 'detail' | 'cart' | 'checkout' | 'profile' | 'admin' | 'search';
 
-export interface ProductReview {
+export interface Review {
   id: string;
-  product_id: string;
-  user_id: string;
   rating: number;
-  comment?: string;
-  author_name: string;
-  created_at: string;
-}
-
-export interface Profile {
-  id: string;
-  email: string;
-  full_name?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
-  role: 'customer' | 'admin';
-  created_at: string;
+  comment: string;
+  user_name: string;
+  date: string;
 }
 
 export interface Product {
@@ -28,17 +13,13 @@ export interface Product {
   name: string;
   category: string;
   subcategory: string;
-  description?: string;
-  price: number;
+  price: string;
   image_url: string;
   benefits: string[];
   ingredients: string;
   how_to_use: string[];
-  stock: number;
-  average_rating: number;
-  total_reviews: number;
-  is_active: boolean;
-  limited?: boolean; // Keep for UI compatibility if needed
+  limited?: boolean;
+  reviews?: Review[];
 }
 
 export interface User {
@@ -57,41 +38,44 @@ export interface CartItem {
   productId: string;
   quantity: number;
   price: number;
-  products?: Product; // For Supabase joins
 }
 
 export interface Order {
   id: string;
-  order_number: string;
-  user_id: string;
-  customer_email: string;
-  customer_name?: string;
-  customer_phone?: string;
-  shipping_address: string;
-  shipping_city: string;
-  shipping_state: string;
-  shipping_zip: string;
-  shipping_country: string;
-  shipping_method: string;
-  payment_method: string;
-  payment_status: string;
+  orderNumber: string;        // ORD-2024-00123
+  userId: string;
+  email: string;
+  createdAt: string;          // ISO timestamp
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  
+  // Shipping
+  shippingName: string;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingZip: string;
+  shippingMethod: 'standard' | 'express';
+  
+  // Payment
+  paymentMethod: 'card' | 'mpesa';
+  paymentStatus: 'pending' | 'succeeded' | 'failed';
+  stripePaymentIntentId?: string;
+  
+  // Items & Totals
+  items: OrderItem[];
   subtotal: number;
-  shipping_cost: number;
+  shippingCost: number;
   tax: number;
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  created_at: string;
-  order_items?: OrderItem[];
 }
 
 export interface OrderItem {
   id: string;
-  order_id: string;
-  product_id: string;
-  product_name: string;
-  product_category?: string;
+  orderId: string;
+  productId: string;
+  productName: string;
   quantity: number;
-  price_per_unit: number;
+  price: number;
   subtotal: number;
 }
 
