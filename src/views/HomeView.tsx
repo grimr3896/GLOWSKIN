@@ -1,9 +1,24 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Sparkles, Leaf, Beaker, Heart, Rabbit } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS } from '../constants';
+import { dbService } from '../services/dbService';
+import { Product } from '../types';
 
 export function HomeView() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    async function loadProducts() {
+      const data = await dbService.getProducts();
+      setProducts(data);
+    }
+    loadProducts();
+  }, []);
+
+  const featuredSkincare = products.filter(p => ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory.toLowerCase())).slice(0, 4);
+  const featuredMakeup = products.filter(p => ['foundation', 'lip products', 'mascara'].includes(p.subcategory.toLowerCase())).slice(0, 4);
+
   return (
     <div className="w-full relative">
       <div className="fixed inset-0 -z-10 bg-brand-black">
@@ -58,31 +73,31 @@ export function HomeView() {
       </section>
 
       {/* Skincare Section */}
-      <section className="py-48 px-6 md:px-12 max-w-[1600px] mx-auto bg-brand-surface my-24 rounded-[4rem] shadow-2xl relative overflow-hidden group/section">
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto bg-brand-surface my-12 rounded-[3rem] shadow-xl relative overflow-hidden group/section">
         {/* Background Decorative Element */}
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 select-none pointer-events-none opacity-[0.03] group-hover/section:opacity-[0.05] transition-opacity duration-1000">
-          <span className="font-serif text-[40rem] text-brand-emerald italic leading-none">D</span>
+          <span className="font-serif text-[30rem] text-brand-emerald italic leading-none">D</span>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-baseline mb-24 border-b border-brand-border/30 pb-12 relative z-10">
-          <div className="space-y-4">
-            <h2 className="font-serif text-5xl md:text-8xl text-brand-emerald italic leading-tight">Dermal <br/><span className="font-light not-italic text-brand-emerald/80">Basics</span></h2>
+        <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 border-b border-brand-border/30 pb-10 relative z-10">
+          <div className="space-y-3">
+            <h2 className="font-serif text-4xl md:text-6xl text-brand-emerald italic leading-tight">Dermal <br/><span className="font-light not-italic text-brand-emerald/80">Basics</span></h2>
             <p className="font-sans text-[10px] text-brand-emerald/40 tracking-[0.4em] uppercase font-bold">The Archive / Scientifically Formulated</p>
           </div>
-          <Link to="/shop" className="text-brand-emerald group flex items-center gap-4 text-[10px] uppercase tracking-[0.4em] font-black mt-8 md:mt-0">
+          <Link to="/shop" className="text-brand-emerald group flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] font-black mt-6 md:mt-0">
             View All <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
-          {PRODUCTS.filter(p => ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
+          {featuredSkincare.map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className={`group relative bg-white/40 border border-brand-border/20 rounded-[2.5rem] overflow-hidden shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${i % 2 === 1 ? 'lg:mt-12' : ''}`}
+              className={`group relative bg-white/40 border border-brand-border/20 rounded-[2rem] overflow-hidden shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${i % 2 === 1 ? 'lg:mt-8' : ''}`}
             >
               <Link to={`/product/${product.id}`} className="block aspect-[4/5] overflow-hidden relative">
                 <img 
@@ -93,12 +108,12 @@ export function HomeView() {
                 />
                 <div className="absolute inset-0 bg-brand-emerald/5 group-hover:bg-transparent transition-colors duration-500"></div>
               </Link>
-              <div className="p-10 text-center">
-                <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
-                <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
-                <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
+              <div className="p-6 text-center">
+                <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-3">{product.subcategory}</span>
+                <h3 className="font-sans text-[12px] uppercase tracking-[0.1em] text-brand-emerald font-black mb-3 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-10 overflow-hidden">{product.name}</h3>
+                <div className="h-[1px] w-6 bg-brand-border/40 mx-auto mb-4"></div>
                 <span 
-                  className="font-sans tracking-[0.3em] uppercase font-black text-[39px] text-[#0a0909] border-[#080705] border"
+                  className="font-sans tracking-[0.2em] uppercase font-black text-xl text-brand-emerald"
                 >
                   {product.price}
                 </span>
@@ -109,31 +124,31 @@ export function HomeView() {
       </section>
 
       {/* Makeup Section */}
-      <section className="py-48 px-6 md:px-12 max-w-[1600px] mx-auto bg-brand-surface my-24 rounded-[4rem] shadow-2xl relative overflow-hidden group/makeup">
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto bg-brand-surface my-12 rounded-[3rem] shadow-xl relative overflow-hidden group/makeup">
         {/* Background Decorative Element */}
         <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 select-none pointer-events-none opacity-[0.03] group-hover/makeup:opacity-[0.05] transition-opacity duration-1000">
-          <span className="font-serif text-[40rem] text-brand-emerald italic leading-none">A</span>
+          <span className="font-serif text-[30rem] text-brand-emerald italic leading-none">A</span>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-baseline mb-24 border-b border-brand-border/30 pb-12 relative z-10">
-          <div className="space-y-4">
-            <h2 className="font-serif text-5xl md:text-7xl text-brand-emerald italic leading-tight">Artistry <br/><span className="font-light not-italic text-brand-emerald/80">Artifacts</span></h2>
+        <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 border-b border-brand-border/30 pb-10 relative z-10">
+          <div className="space-y-3">
+            <h2 className="font-serif text-4xl md:text-6xl text-brand-emerald italic leading-tight">Artistry <br/><span className="font-light not-italic text-brand-emerald/80">Artifacts</span></h2>
             <p className="font-sans text-[10px] text-brand-emerald/40 tracking-[0.4em] uppercase font-bold">Curated Selection / Effortless Wear</p>
           </div>
-          <Link to="/shop" className="text-brand-emerald group flex items-center gap-4 text-[10px] uppercase tracking-[0.4em] font-black mt-8 md:mt-0">
+          <Link to="/shop" className="text-brand-emerald group flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] font-black mt-6 md:mt-0">
             Explore Palette <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
-          {PRODUCTS.filter(p => ['foundation', 'lip products', 'mascara'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
+          {featuredMakeup.map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className={`group relative bg-white/40 border border-brand-border/20 rounded-[2.5rem] overflow-hidden shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${i % 2 === 0 ? 'lg:mt-12' : ''}`}
+              className={`group relative bg-white/40 border border-brand-border/20 rounded-[2rem] overflow-hidden shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${i % 2 === 0 ? 'lg:mt-8' : ''}`}
             >
               <Link to={`/product/${product.id}`} className="block aspect-[4/5] overflow-hidden relative">
                 <img 
@@ -144,11 +159,11 @@ export function HomeView() {
                 />
                 <div className="absolute inset-0 bg-brand-emerald/5 group-hover:bg-transparent transition-colors duration-500"></div>
               </Link>
-              <div className="p-10 text-center">
-                <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-4">{product.subcategory}</span>
-                <h3 className="font-sans text-[14px] uppercase tracking-[0.2em] text-brand-emerald font-black mb-4 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-14 overflow-hidden">{product.name}</h3>
-                <div className="h-[1px] w-8 bg-brand-border/40 mx-auto mb-6"></div>
-                <span className="font-sans tracking-[0.3em] uppercase font-black text-[39px] text-[#0a0909] border-[#080705] border">
+              <div className="p-6 text-center">
+                <span className="text-[9px] text-brand-emerald-light uppercase tracking-widest font-black block mb-3">{product.subcategory}</span>
+                <h3 className="font-sans text-[12px] uppercase tracking-[0.1em] text-brand-emerald font-black mb-3 leading-relaxed group-hover:text-brand-emerald-light transition-colors h-10 overflow-hidden">{product.name}</h3>
+                <div className="h-[1px] w-6 bg-brand-border/40 mx-auto mb-4"></div>
+                <span className="font-sans tracking-[0.2em] uppercase font-black text-xl text-brand-emerald">
                   {product.price}
                 </span>
               </div>
@@ -186,8 +201,8 @@ export function HomeView() {
                 The Archive
                 <div className="absolute -bottom-4 left-0 w-12 h-[2px] bg-brand-emerald-light"></div>
               </span>
-              <h2 className="font-serif text-6xl md:text-8xl text-brand-emerald mb-12 leading-tight italic">Rooted in <br/><span className="italic font-light">Heritage</span></h2>
-              <p className="text-xl text-brand-emerald/80 mb-16 leading-relaxed font-light italic">
+              <h2 className="font-serif text-5xl md:text-7xl text-brand-emerald mb-10 leading-tight italic">Rooted in <br/><span className="italic font-light">Heritage</span></h2>
+              <p className="text-lg text-brand-emerald/80 mb-12 leading-relaxed font-light italic">
                 Our curated collection features the finest artisanal and clinical formulations. From the world's leading labs to your daily routine, we bridge the gap between tradition and innovation.
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-12 sm:gap-16">

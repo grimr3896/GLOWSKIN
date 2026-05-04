@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
-import { supabase } from '../supabaseClient';
+import { supabase } from './supabaseClient';
 
 interface AuthContextType {
   user: User | null;
@@ -22,11 +22,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        // Fetch profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
         const userData: User = {
           id: session.user.id,
           email: session.user.email || '',
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-          role: 'customer'
+          name: profile?.name || session.user.user_metadata?.full_name || 'User',
+          role: profile?.role || 'customer',
+          phone: profile?.phone,
+          preferences: profile?.preferences
         };
         setUser(userData);
       }
@@ -36,13 +45,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession();
 
     // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
         const userData: User = {
           id: session.user.id,
           email: session.user.email || '',
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-          role: 'customer'
+          name: profile?.name || session.user.user_metadata?.full_name || 'User',
+          role: profile?.role || 'customer',
+          phone: profile?.phone,
+          preferences: profile?.preferences
         };
         setUser(userData);
       } else {

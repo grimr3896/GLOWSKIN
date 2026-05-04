@@ -70,9 +70,9 @@ export function CollectionView() {
 
     // Sorting
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
+      result.sort((a, b) => (a.price_amount || parseFloat(a.price.replace('$', ''))) - (b.price_amount || parseFloat(b.price.replace('$', ''))));
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
+      result.sort((a, b) => (b.price_amount || parseFloat(b.price.replace('$', ''))) - (a.price_amount || parseFloat(a.price.replace('$', ''))));
     }
 
     return result;
@@ -94,10 +94,10 @@ export function CollectionView() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-32 bg-brand-surface mt-24 rounded-[3rem] shadow-2xl relative">
+    <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 bg-brand-surface mt-24 rounded-[3rem] shadow-2xl relative">
       {/* Header */}
-      <div className="mb-24">
-        <nav className="flex items-center space-x-3 text-brand-emerald/40 text-[10px] uppercase tracking-[0.3em] font-bold mb-8">
+      <div className="mb-16">
+        <nav className="flex items-center space-x-3 text-brand-emerald/40 text-[10px] uppercase tracking-[0.3em] font-bold mb-6">
           <Link to="/" className="hover:text-brand-emerald-light transition-colors">Home</Link>
           <ChevronRight size={12} />
           <Link to="/shop" className="hover:text-brand-emerald-light transition-colors">Shop</Link>
@@ -108,16 +108,16 @@ export function CollectionView() {
             </>
           )}
         </nav>
-        <h1 className="font-serif text-6xl md:text-8xl italic text-brand-emerald border-b border-brand-border/30 pb-12 mb-12 leading-tight">
+        <h1 className="font-serif text-4xl md:text-6xl italic text-brand-emerald border-b border-brand-border/30 pb-10 mb-10 leading-tight">
           {activeCategory ? activeCategory.replace(/-/g, ' ') : 'The Collection'}
         </h1>
 
-        <div className="flex flex-col md:flex-row justify-between items-end gap-12">
-          <p className="max-w-xl text-brand-emerald/70 text-xl leading-relaxed font-light italic">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+          <p className="max-w-xl text-brand-emerald/70 text-lg leading-relaxed font-light italic">
             Curated clinical and cosmetic solutions for radiant skin and effortless beauty. From foundational basics to targeted treatments.
           </p>
           
-          <div className="flex flex-col md:flex-row gap-6 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <div className="relative group">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-border group-focus-within:text-brand-emerald-light transition-colors" size={16} />
               <input 

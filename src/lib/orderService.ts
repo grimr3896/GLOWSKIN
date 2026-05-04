@@ -1,8 +1,6 @@
 import { CartItem } from '../types/cart';
 import { Order, OrderItem } from '../types';
-
-// This will connect to Supabase when you set it up
-// For now, mock implementation
+import { supabase } from '../context/supabaseClient';
 
 export const generateOrderNumber = (): string => {
   const timestamp = Date.now().toString().slice(-6);
@@ -15,7 +13,6 @@ export const calculateShippingCost = (method: 'standard' | 'express'): number =>
 };
 
 export const calculateTax = (subtotal: number): number => {
-  // Assuming 8% tax for now - adjust based on location
   return subtotal * 0.08;
 };
 
@@ -36,21 +33,22 @@ export interface CreateOrderParams {
   stripePaymentIntentId: string;
 }
 
-const ORDERS_STORAGE_KEY = 'glowskin_orders';
+export const getOrders = async (userId: string): Promise<Order[]> => {
+  const { data, error } = await supabase
+    .from('orders')
+    .select(`
+      *,
+      items:order_items(*)
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
 
-export const getOrders = (): Order[] => {
-  const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
-  if (!savedOrders) return [];
-  try {
-    return JSON.parse(savedOrders);
-  } catch {
+  if (error) {
+    console.error('Error fetching orders:', error);
     return [];
   }
-};
 
-export const saveOrder = (order: Order) => {
-  const orders = getOrders();
-  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify([order, ...orders]));
+  return data as Order[];
 };
 
 export const createOrder = async (params: CreateOrderParams): Promise<Order> => {
@@ -64,43 +62,54 @@ export const createOrder = async (params: CreateOrderParams): Promise<Order> => 
     const tax = calculateTax(subtotal);
     const total = subtotal + shippingCost + tax;
 
-    // Mock response for now
-    const order: Order = {
-      id: Math.random().toString(),
-      orderNumber,
-      userId: params.userId,
-      email: params.email,
-      createdAt: new Date().toISOString(),
-      status: 'pending',
-      shippingName: params.shippingDetails.name,
-      shippingAddress: params.shippingDetails.address,
-      shippingCity: params.shippingDetails.city,
-      shippingState: params.shippingDetails.state,
-      shippingZip: params.shippingDetails.zip,
-      shippingMethod: params.shippingMethod,
-      paymentMethod: params.paymentMethod,
-      paymentStatus: 'succeeded',
-      stripePaymentIntentId: params.stripePaymentIntentId,
-      items: params.cartItems.map(
-        (item) =>
-          ({
-            id: Math.random().toString(),
-            orderId: '',
-            productId: item.productId,
-            productName: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            subtotal: item.price * item.quantity,
-          } as OrderItem)
-      ),
-      subtotal,
-      shippingCost,
-      tax,
-      total,
-    };
+    // 1. Create order record
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert([{
+        order_number: orderNumber,
+        user_id: params.userId,
+        email: params.email,
+        status: 'pending',
+        shipping_name: params.shippingDetails.name,
+        shipping_address: params.shippingDetails.address,
+        shipping_city: params.shippingDetails.city,
+        shipping_state: params.shippingDetails.state,
+        shipping_zip: params.shippingDetails.zip,
+        shipping_method: params.shippingMethod,
+        payment_method: params.paymentMethod,
+        payment_status: 'succeeded',
+        stripe_payment_intent_id: params.stripePaymentIntentId,
+        subtotal,
+        shipping_cost: shippingCost,
+        tax,
+        total
+      }])
+      .select()
+      .single();
 
-    saveOrder(order);
-    return order;
+    if (orderError) throw orderError;
+
+    // 2. Create order items
+    const orderItems = params.cartItems.map(item => ({
+      order_id: order.id,
+      product_id: item.productId,
+      product_name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      subtotal: item.price * item.quantity
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) throw itemsError;
+
+    // 3. Return combined object
+    return {
+      ...order,
+      items: orderItems
+    } as Order;
   } catch (error) {
     console.error('Failed to create order:', error);
     throw new Error('Failed to create order. Please contact support.');
