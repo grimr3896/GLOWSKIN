@@ -102,10 +102,12 @@ export function SignInView() {
       }
 
       if (data.user && data.session) {
-        // Update local auth context
-        const name = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
-        login(data.user.email || email, name);
-        navigate('/');
+        setSuccessMessage('Sign in successful! Redirecting...');
+        // The onAuthStateChange will handle context update
+        // We navigate after a tiny delay for the user to see the success message
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else if (data.user && !data.session) {
         setErrorMessage('Please confirm your email address before signing in.');
         setIsLoading(false);
@@ -146,9 +148,9 @@ export function SignInView() {
   return (
     <div className="min-h-screen bg-[#1A0809] pt-32 pb-20 px-6 flex items-center justify-center">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-[450px]"
       >
         <div className="bg-[#0A0E27] border border-[#1DB679] p-8 md:p-12 rounded-2xl shadow-2xl">
