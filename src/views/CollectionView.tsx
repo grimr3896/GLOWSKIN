@@ -76,7 +76,7 @@ export function CollectionView() {
     }
 
     return result;
-  }, [searchQuery, sortBy, activeCategory]);
+  }, [products, searchQuery, sortBy, activeCategory]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
