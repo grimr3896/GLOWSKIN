@@ -70,9 +70,9 @@ export function CollectionView() {
 
     // Sorting
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => (a.price_amount || parseFloat(a.price.replace('$', ''))) - (b.price_amount || parseFloat(b.price.replace('$', ''))));
+      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => (b.price_amount || parseFloat(b.price.replace('$', ''))) - (a.price_amount || parseFloat(a.price.replace('$', ''))));
+      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
     }
 
     return result;

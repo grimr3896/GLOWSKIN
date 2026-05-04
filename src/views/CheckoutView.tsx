@@ -173,15 +173,10 @@ export function CheckoutView() {
       // 3. Clear cart
       clearCart();
 
-      // 4. Show confirmation page
-      setStep('confirmation');
-      
-      // Auto-redirect after 5 seconds to profile with order number
-      const timer = setTimeout(() => {
-        navigate(`/profile?orderNumber=${newOrder.orderNumber}`);
-      }, 5000);
+      // 4. Navigate to confirmation page
+      navigate(`/order-confirmation?orderNumber=${newOrder.orderNumber}`);
 
-      return () => clearTimeout(timer);
+      return;
     } catch (error) {
       console.error('Post-payment error:', error);
       addError(ErrorCode.CHECKOUT_FAILED);

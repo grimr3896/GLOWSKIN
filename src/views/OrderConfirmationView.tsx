@@ -1,9 +1,11 @@
 import { motion } from 'motion/react';
 import { CheckCircle2, Package, Truck, Calendar } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Order } from '../types';
 
 export function OrderConfirmationView() {
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const orderNumber = searchParams.get('orderNumber');
   
@@ -12,8 +14,8 @@ export function OrderConfirmationView() {
   const mockOrder: Order = {
     id: '1',
     orderNumber: orderNumber || 'ORD-2024-00123',
-    userId: '1',
-    email: 'user@example.com',
+    userId: user?.id || '1',
+    email: user?.email || 'user@example.com',
     createdAt: new Date().toISOString(),
     status: 'pending',
     shippingName: 'John Doe',

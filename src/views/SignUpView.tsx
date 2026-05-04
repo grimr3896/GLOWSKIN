@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Check, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../context/supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export function SignUpView() {
   const navigate = useNavigate();

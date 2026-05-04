@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../context/supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export function SignInView() {
   const navigate = useNavigate();
@@ -102,12 +102,10 @@ export function SignInView() {
       }
 
       if (data.user && data.session) {
-        setSuccessMessage('Sign in successful! Redirecting...');
-        // The onAuthStateChange will handle context update
-        // We navigate after a tiny delay for the user to see the success message
-        setTimeout(() => {
-          navigate('/');
-        }, 500);
+        // Update local auth context
+        const name = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
+        login(data.user.email || email, name);
+        navigate('/');
       } else if (data.user && !data.session) {
         setErrorMessage('Please confirm your email address before signing in.');
         setIsLoading(false);
@@ -148,9 +146,9 @@ export function SignInView() {
   return (
     <div className="min-h-screen bg-[#1A0809] pt-32 pb-20 px-6 flex items-center justify-center">
       <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
         className="w-full max-w-[450px]"
       >
         <div className="bg-[#0A0E27] border border-[#1DB679] p-8 md:p-12 rounded-2xl shadow-2xl">
@@ -226,13 +224,19 @@ export function SignInView() {
               )}
 
               {successMessage && (
-                <motion.p 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-[#1DB679] text-[11px] font-bold text-center mt-4"
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-brand-emerald/10 border border-brand-emerald/30 p-4 rounded-xl text-center mb-6"
                 >
-                  {successMessage}
-                </motion.p>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckCircle2 size={16} className="text-brand-emerald" />
+                    <span className="text-brand-emerald text-[11px] font-black uppercase tracking-widest">Digital Dispatch Sent</span>
+                  </div>
+                  <p className="text-[#1DB679] text-[12px] font-medium leading-relaxed italic">
+                    {successMessage}
+                  </p>
+                </motion.div>
               )}
 
               <div className="relative py-4">

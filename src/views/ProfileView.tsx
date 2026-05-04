@@ -21,27 +21,25 @@ export function ProfileView() {
   };
 
   useEffect(() => {
-    const fetchUserOrders = async () => {
-      if (isAuthenticated && user) {
-        const userOrders = await getOrders(user.id);
-        setOrders(userOrders);
+    if (isAuthenticated && user) {
+      const allOrders = getOrders();
+      // Filter orders for the current user
+      const userOrders = allOrders.filter(o => o.userId === user.id);
+      setOrders(userOrders);
 
-        // Check for orderNumber in URL
-        const params = new URLSearchParams(window.location.search);
-        const orderNum = params.get('orderNumber');
-        if (orderNum) {
-          const orderToShow = userOrders.find(o => o.orderNumber === orderNum);
-          if (orderToShow) {
-            setSelectedOrder(orderToShow);
-            setActiveModal('order');
-            // Clear param to avoid re-opening on every render
-            window.history.replaceState({}, '', window.location.pathname);
-          }
+      // Check for orderNumber in URL
+      const params = new URLSearchParams(window.location.search);
+      const orderNum = params.get('orderNumber');
+      if (orderNum) {
+        const orderToShow = userOrders.find(o => o.orderNumber === orderNum);
+        if (orderToShow) {
+          setSelectedOrder(orderToShow);
+          setActiveModal('order');
+          // Clear param to avoid re-opening on every render
+          window.history.replaceState({}, '', window.location.pathname);
         }
       }
-    };
-
-    fetchUserOrders();
+    }
   }, [isAuthenticated, user]);
 
   const handleSignOut = () => {

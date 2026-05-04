@@ -14,7 +14,6 @@ export interface Product {
   category: string;
   subcategory: string;
   price: string;
-  price_amount?: number;
   image_url: string;
   benefits: string[];
   ingredients: string;

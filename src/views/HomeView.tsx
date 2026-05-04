@@ -1,24 +1,9 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Sparkles, Leaf, Beaker, Heart, Rabbit } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { dbService } from '../services/dbService';
-import { Product } from '../types';
+import { PRODUCTS } from '../constants';
 
 export function HomeView() {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    async function loadProducts() {
-      const data = await dbService.getProducts();
-      setProducts(data);
-    }
-    loadProducts();
-  }, []);
-
-  const featuredSkincare = products.filter(p => ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory.toLowerCase())).slice(0, 4);
-  const featuredMakeup = products.filter(p => ['foundation', 'lip products', 'mascara'].includes(p.subcategory.toLowerCase())).slice(0, 4);
-
   return (
     <div className="w-full relative">
       <div className="fixed inset-0 -z-10 bg-brand-black">
@@ -90,7 +75,7 @@ export function HomeView() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
-          {featuredSkincare.map((product, i) => (
+          {PRODUCTS.filter(p => ['cleansers', 'moisturizers', 'sunscreen'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}
@@ -141,7 +126,7 @@ export function HomeView() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
-          {featuredMakeup.map((product, i) => (
+          {PRODUCTS.filter(p => ['foundation', 'lip products', 'mascara'].includes(p.subcategory.toLowerCase())).slice(0, 4).map((product, i) => (
             <motion.div 
               key={product.id}
               initial={{ opacity: 0, y: 40 }}

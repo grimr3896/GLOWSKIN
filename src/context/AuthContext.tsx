@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 interface AuthContextType {
   user: User | null;
@@ -20,80 +20,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Initial check
     const checkSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // Set basic user immediately
-          const basicUser: User = {
-            id: session.user.id,
-            email: session.user.email || '',
-            name: session.user.user_metadata?.full_name || 'User',
-            role: 'customer'
-          };
-          setUser(basicUser);
-          setIsLoading(false);
-
-          // Fetch profile in background
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) {
-            setUser({
-              ...basicUser,
-              name: profile.name || basicUser.name,
-              role: profile.role || 'customer',
-              phone: profile.phone,
-              preferences: profile.preferences
-            });
-          }
-        } else {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Session check failed:', error);
-        setIsLoading(false);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const userData: User = {
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          role: 'customer'
+        };
+        setUser(userData);
       }
+      setIsLoading(false);
     };
 
     checkSession();
 
     // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        // Set basic user immediately to unlock UI
-        const basicUser: User = {
+        const userData: User = {
           id: session.user.id,
           email: session.user.email || '',
-          name: session.user.user_metadata?.full_name || 'User',
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
           role: 'customer'
         };
-        setUser(basicUser);
-        setIsLoading(false);
-
-        // Fetch profile in background ONLY if it's a relevant event (like sign in)
-        // or just always do it as it's non-blocking now
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile) {
-          setUser({
-            ...basicUser,
-            name: profile.name || basicUser.name,
-            role: profile.role || 'customer',
-            phone: profile.phone,
-            preferences: profile.preferences
-          });
-        }
+        setUser(userData);
       } else {
         setUser(null);
-        setIsLoading(false);
       }
+      setIsLoading(false);
     });
 
     return () => {
